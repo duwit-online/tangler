@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, PanInfo, useMotionValue, useTransform } from "framer-motion";
-import { MapPin, Verified, Heart, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Verified, Heart, X, ChevronLeft, ChevronRight, Map } from "lucide-react";
 import { Profile } from "@/data/profiles";
 import { Badge } from "@/components/ui/badge";
+import LocationMap from "@/components/LocationMap";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -12,6 +13,7 @@ interface ProfileCardProps {
 
 const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showMap, setShowMap] = useState(false);
   const x = useMotionValue(0);
   
   const rotate = useTransform(x, [-300, 0, 300], [-25, 0, 25]);
@@ -53,15 +55,32 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
       }}
     >
       <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-elevated gradient-card">
-        {/* Image */}
+        {/* Image or Map */}
         <div className="absolute inset-0">
-          <img
-            src={profile.images[currentImageIndex]}
-            alt={profile.name}
-            className="w-full h-full object-cover"
-          />
+          {showMap && profile.location ? (
+            <LocationMap location={profile.location} className="w-full h-full" />
+          ) : (
+            <img
+              src={profile.images[currentImageIndex]}
+              alt={profile.name}
+              className="w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
         </div>
+
+        {/* Map toggle button */}
+        {profile.location && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMap(!showMap);
+            }}
+            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-card/20 backdrop-blur-sm text-card hover:bg-card/40 transition-colors"
+          >
+            <Map className={`w-5 h-5 ${showMap ? 'text-primary' : ''}`} />
+          </button>
+        )}
 
         {/* Image navigation indicators */}
         <div className="absolute top-4 left-4 right-4 flex gap-1">
