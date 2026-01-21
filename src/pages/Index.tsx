@@ -9,8 +9,10 @@ import MatchesView from "@/components/MatchesView";
 import MessagesView from "@/components/MessagesView";
 import ProfileView from "@/components/ProfileView";
 import ChatView from "@/components/ChatView";
-import { useDiscoverProfiles, useSwipe, DiscoverProfile } from "@/hooks/useSwipes";
+import NotificationsView from "@/components/NotificationsView";
+import { useDiscoverProfiles, useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
 import { Loader2, Heart } from "lucide-react";
+import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("discover");
@@ -22,8 +24,8 @@ const Index = () => {
     photo: string | null;
   } | null>(null);
 
-  const { data: profiles = [], isLoading, refetch } = useDiscoverProfiles();
-  const swipeMutation = useSwipe();
+  const { data: profiles = [], isLoading } = useDiscoverProfiles();
+  const { swipe: swipeMutation, undo: undoMutation, canUndo } = useSwipeWithUndo();
 
   const handleSwipe = async (direction: "left" | "right") => {
     const currentProfile = profiles[0];
@@ -35,6 +37,7 @@ const Index = () => {
       const result = await swipeMutation.mutateAsync({
         swipedId: currentProfile.user_id,
         direction: swipeDirection,
+        profile: currentProfile,
       });
 
       if (result.match) {
@@ -43,6 +46,7 @@ const Index = () => {
       }
     } catch (error) {
       console.error("Swipe failed:", error);
+      toast.error("Swipe failed. Please try again.");
     }
   };
 
@@ -54,6 +58,7 @@ const Index = () => {
       const result = await swipeMutation.mutateAsync({
         swipedId: currentProfile.user_id,
         direction: "superlike",
+        profile: currentProfile,
       });
 
       if (result.match) {
@@ -62,6 +67,17 @@ const Index = () => {
       }
     } catch (error) {
       console.error("Super like failed:", error);
+      toast.error("Super like failed. Please try again.");
+    }
+  };
+
+  const handleUndo = async () => {
+    try {
+      await undoMutation.mutateAsync();
+      toast.success("Swipe undone!");
+    } catch (error) {
+      console.error("Undo failed:", error);
+      toast.error("Couldn't undo. Please try again.");
     }
   };
 
@@ -122,8 +138,8 @@ const Index = () => {
               <SwipeButtons
                 onSwipe={handleSwipe}
                 onSuperLike={handleSuperLike}
-                onUndo={() => {}}
-                canUndo={false}
+                onUndo={handleUndo}
+                canUndo={canUndo}
               />
             )}
           </div>
@@ -132,6 +148,8 @@ const Index = () => {
         return <MatchesView onOpenChat={setActiveChat} />;
       case "messages":
         return <MessagesView onOpenChat={setActiveChat} />;
+      case "notifications":
+        return <NotificationsView onOpenChat={setActiveChat} />;
       case "profile":
         return <ProfileView />;
       default:
@@ -141,7 +159,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background gradient-warm">
-      <Header />
+      <Header onNotificationClick={() => setActiveTab("notifications")} />
       
       <main className="min-h-screen max-w-md mx-auto">
         <AnimatePresence mode="wait">

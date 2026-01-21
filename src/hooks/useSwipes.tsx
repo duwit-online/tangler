@@ -2,10 +2,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { Profile, getPhotoUrl } from './useProfile';
+import { useState, useCallback } from 'react';
 
 export interface DiscoverProfile extends Profile {
   photos: string[];
   distance?: number;
+}
+
+interface SwipeHistory {
+  swipeId: string;
+  swipedId: string;
+  direction: 'like' | 'pass' | 'superlike';
+  profile: DiscoverProfile;
 }
 
 export const useDiscoverProfiles = () => {
@@ -59,6 +67,97 @@ export const useDiscoverProfiles = () => {
   });
 };
 
+export const useSwipeWithUndo = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [lastSwipe, setLastSwipe] = useState<SwipeHistory | null>(null);
+
+  const swipeMutation = useMutation({
+    mutationFn: async ({ 
+      swipedId, 
+      direction,
+      profile,
+    }: { 
+      swipedId: string; 
+      direction: 'like' | 'pass' | 'superlike';
+      profile: DiscoverProfile;
+    }) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('swipes')
+        .insert({
+          swiper_id: user.id,
+          swiped_id: swipedId,
+          direction,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Store for undo
+      setLastSwipe({
+        swipeId: data.id,
+        swipedId,
+        direction,
+        profile,
+      });
+
+      // Check if there's a new match
+      const { data: match } = await supabase
+        .from('matches')
+        .select('*')
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        .or(`user1_id.eq.${swipedId},user2_id.eq.${swipedId}`)
+        .order('matched_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      return { swipe: data, match };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discover-profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+    },
+  });
+
+  const undoMutation = useMutation({
+    mutationFn: async () => {
+      if (!lastSwipe) throw new Error('No swipe to undo');
+
+      const { error } = await supabase
+        .from('swipes')
+        .delete()
+        .eq('id', lastSwipe.swipeId);
+
+      if (error) throw error;
+
+      const profileToRestore = lastSwipe.profile;
+      setLastSwipe(null);
+      
+      return profileToRestore;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discover-profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+    },
+  });
+
+  const clearUndo = useCallback(() => {
+    setLastSwipe(null);
+  }, []);
+
+  return {
+    swipe: swipeMutation,
+    undo: undoMutation,
+    canUndo: !!lastSwipe,
+    lastSwipe,
+    clearUndo,
+  };
+};
+
+// Keep legacy hook for compatibility
 export const useSwipe = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();

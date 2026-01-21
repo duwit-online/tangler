@@ -1,7 +1,14 @@
 import { motion } from "framer-motion";
 import { Settings, Bell } from "lucide-react";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 
-const Header = () => {
+interface HeaderProps {
+  onNotificationClick?: () => void;
+}
+
+const Header = ({ onNotificationClick }: HeaderProps) => {
+  const unreadCount = useUnreadNotificationCount();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="flex items-center justify-between h-16 max-w-md mx-auto px-4">
@@ -41,10 +48,15 @@ const Header = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={onNotificationClick}
           className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-foreground hover:bg-secondary/80 transition-colors"
         >
           <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
         </motion.button>
       </div>
     </header>
