@@ -10,6 +10,7 @@ import MessagesView from "@/components/MessagesView";
 import ProfileView from "@/components/ProfileView";
 import ChatView from "@/components/ChatView";
 import NotificationsView from "@/components/NotificationsView";
+import ExploreView from "@/components/ExploreView";
 import { useDiscoverProfiles, useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
 import { Loader2, Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -144,6 +145,8 @@ const Index = () => {
             )}
           </div>
         );
+      case "explore":
+        return <ExploreView />;
       case "matches":
         return <MatchesView onOpenChat={setActiveChat} />;
       case "messages":
