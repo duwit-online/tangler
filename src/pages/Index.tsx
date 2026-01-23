@@ -11,7 +11,9 @@ import ProfileView from "@/components/ProfileView";
 import ChatView from "@/components/ChatView";
 import NotificationsView from "@/components/NotificationsView";
 import ExploreView from "@/components/ExploreView";
+import LikesView from "@/components/LikesView";
 import { useDiscoverProfiles, useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
+import { useSmartDiscoverProfiles } from "@/hooks/useSmartMatching";
 import { Loader2, Heart } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,7 +27,8 @@ const Index = () => {
     photo: string | null;
   } | null>(null);
 
-  const { data: profiles = [], isLoading } = useDiscoverProfiles();
+  // Use smart matching for discover - filters by gender preferences
+  const { data: profiles = [], isLoading } = useSmartDiscoverProfiles();
   const { swipe: swipeMutation, undo: undoMutation, canUndo } = useSwipeWithUndo();
 
   const handleSwipe = async (direction: "left" | "right") => {
@@ -146,7 +149,9 @@ const Index = () => {
           </div>
         );
       case "explore":
-        return <ExploreView />;
+        return <ExploreView onViewLikes={() => setActiveTab("likes")} />;
+      case "likes":
+        return <LikesView onOpenChat={setActiveChat} />;
       case "matches":
         return <MatchesView onOpenChat={setActiveChat} />;
       case "messages":

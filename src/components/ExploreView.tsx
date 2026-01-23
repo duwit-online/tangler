@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import CategoryPills from "./explore/CategoryPills";
 import ProfileCarousel from "./explore/ProfileCarousel";
 import ExploreFiltersSheet from "./explore/ExploreFiltersSheet";
 import ProfileDetailModal from "./explore/ProfileDetailModal";
+import NewMatchesSection from "./explore/NewMatchesSection";
+import WhoLikedYouSection from "./explore/WhoLikedYouSection";
 import {
   useExploreProfiles,
   useNearbyProfiles,
@@ -17,7 +19,11 @@ import {
 } from "@/hooks/useExploreProfiles";
 import { useSwipe, DiscoverProfile } from "@/hooks/useSwipes";
 
-const ExploreView = () => {
+interface ExploreViewProps {
+  onViewLikes?: () => void;
+}
+
+const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
   const [filters, setFilters] = useState<ExploreFilters>(defaultFilters);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -126,6 +132,16 @@ const ExploreView = () => {
 
       {/* Content */}
       <div className="space-y-8">
+        {/* New Matches This Week - Special Section */}
+        {!selectedCategory && (
+          <NewMatchesSection onProfileClick={setSelectedProfile} />
+        )}
+
+        {/* Who Liked You - Premium Section */}
+        {!selectedCategory && onViewLikes && (
+          <WhoLikedYouSection onViewAll={onViewLikes} isPremium={true} />
+        )}
+
         {/* Nearby Section */}
         {!selectedCategory && (
           <ProfileCarousel
