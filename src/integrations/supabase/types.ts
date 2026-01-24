@@ -112,7 +112,9 @@ export type Database = {
           gender: string | null
           id: string
           interests: string[] | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           looking_for: string | null
           onboarding_completed: boolean | null
           updated_at: string
@@ -126,7 +128,9 @@ export type Database = {
           gender?: string | null
           id?: string
           interests?: string[] | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           looking_for?: string | null
           onboarding_completed?: boolean | null
           updated_at?: string
@@ -140,7 +144,9 @@ export type Database = {
           gender?: string | null
           id?: string
           interests?: string[] | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           looking_for?: string | null
           onboarding_completed?: boolean | null
           updated_at?: string

@@ -3,6 +3,7 @@ import { Heart, MapPin, Verified } from "lucide-react";
 import { DiscoverProfile } from "@/hooks/useSwipes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import {
   Carousel,
   CarouselContent,
@@ -47,10 +48,12 @@ const ProfileCarousel = ({ profiles, title, icon, onProfileClick, onLike }: Prof
                 className="relative rounded-2xl overflow-hidden shadow-card cursor-pointer group aspect-[3/4]"
                 onClick={() => onProfileClick(profile)}
               >
-                <img
+                <OptimizedImage
                   src={profile.photos[0]}
                   alt={profile.display_name || "Profile"}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  aspectRatio="portrait"
+                  priority={index < 3}
+                  className="w-full h-full transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
                 

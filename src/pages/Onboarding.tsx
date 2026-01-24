@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronRight, 
@@ -9,7 +9,9 @@ import {
   Loader2,
   Heart,
   Check,
-  Video
+  Video,
+  MapPin,
+  Navigation
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +21,7 @@ import { useUpdateProfile, useUploadPhoto, useUserPhotos, getPhotoUrl, useDelete
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import VideoRecorder from '@/components/onboarding/VideoRecorder';
+import { supabase } from '@/integrations/supabase/client';
 
 const INTERESTS = [
   'Travel', 'Music', 'Movies', 'Books', 'Fitness', 'Cooking',
@@ -41,6 +44,8 @@ const Onboarding = () => {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [locationGranted, setLocationGranted] = useState(false);
+  const [requestingLocation, setRequestingLocation] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -56,6 +61,7 @@ const Onboarding = () => {
     { title: 'About You', subtitle: 'Tell us who you are' },
     { title: 'Your Bio', subtitle: 'Write something interesting' },
     { title: 'Interests', subtitle: 'Pick at least 3' },
+    { title: 'Location', subtitle: 'Find matches near you' },
   ];
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +101,38 @@ const Onboarding = () => {
     );
   };
 
+  const requestLocation = async () => {
+    if (!("geolocation" in navigator)) {
+      toast.error("Geolocation is not supported");
+      return;
+    }
+
+    setRequestingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          await supabase
+            .from("profiles")
+            .update({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            })
+            .eq("user_id", user?.id);
+          setLocationGranted(true);
+          toast.success("Location saved!");
+        } catch (error) {
+          toast.error("Failed to save location");
+        }
+        setRequestingLocation(false);
+      },
+      (error) => {
+        toast.error("Location permission denied");
+        setRequestingLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const canProceed = () => {
     switch (step) {
       case 0: return photos.length >= 1;
@@ -102,6 +140,7 @@ const Onboarding = () => {
       case 2: return displayName.trim() && age && parseInt(age) >= 18 && gender && lookingFor;
       case 3: return bio.trim().length >= 20;
       case 4: return selectedInterests.length >= 3;
+      case 5: return true; // Location is optional
       default: return false;
     }
   };
@@ -372,6 +411,49 @@ const Onboarding = () => {
                 <p className="text-center text-sm text-muted-foreground mt-4">
                   Selected: {selectedInterests.length}/3 minimum
                 </p>
+              </div>
+            )}
+
+            {/* Step 5: Location */}
+            {step === 5 && (
+              <div className="text-center space-y-6">
+                <div className="w-24 h-24 mx-auto rounded-full gradient-primary flex items-center justify-center">
+                  <MapPin className="w-12 h-12 text-primary-foreground" />
+                </div>
+                
+                {locationGranted ? (
+                  <div className="space-y-4">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                      <Check className="w-8 h-8 text-primary" />
+                    </div>
+                    <p className="text-foreground font-medium">Location enabled!</p>
+                    <p className="text-muted-foreground text-sm">
+                      You'll see real distances to potential matches.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      Enable location to find matches near you and see real distances.
+                    </p>
+                    <Button
+                      onClick={requestLocation}
+                      disabled={requestingLocation}
+                      className="gradient-primary text-primary-foreground"
+                      size="lg"
+                    >
+                      {requestingLocation ? (
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      ) : (
+                        <Navigation className="w-5 h-5 mr-2" />
+                      )}
+                      Enable Location
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      You can skip this step and enable later in settings.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </motion.div>

@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { getPhotoUrl } from './useProfile';
+import { getPhotoUrl, useProfile } from './useProfile';
 import { DiscoverProfile } from './useSwipes';
 
 export interface ExploreFilters {
@@ -20,8 +20,24 @@ export const defaultFilters: ExploreFilters = {
 
 const PAGE_SIZE = 10;
 
+// Haversine formula to calculate distance between two coordinates in miles
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 3959; // Earth's radius in miles
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
+};
+
 export const useExploreProfiles = (filters: ExploreFilters, category?: string) => {
   const { user } = useAuth();
+  const { data: myProfile } = useProfile();
 
   return useInfiniteQuery({
     queryKey: ['explore-profiles', user?.id, filters, category],
@@ -73,6 +89,10 @@ export const useExploreProfiles = (filters: ExploreFilters, category?: string) =
       // Filter out swiped profiles
       const unswiped = profiles?.filter(p => !swipedUserIds.includes(p.user_id)) || [];
 
+      // Get my location for distance calculation
+      const myLat = (myProfile as any)?.latitude;
+      const myLon = (myProfile as any)?.longitude;
+
       // Get photos for each profile
       const profilesWithPhotos = await Promise.all(
         unswiped.map(async (profile) => {
@@ -82,13 +102,22 @@ export const useExploreProfiles = (filters: ExploreFilters, category?: string) =
             .eq('user_id', profile.user_id)
             .order('display_order', { ascending: true });
 
-          // Mock distance based on filter (in real app, use geolocation)
-          const mockDistance = Math.floor(Math.random() * filters.distance) + 1;
+          // Calculate real distance if both have location data
+          const theirLat = (profile as any).latitude;
+          const theirLon = (profile as any).longitude;
+          let distance: number;
+          
+          if (myLat && myLon && theirLat && theirLon) {
+            distance = calculateDistance(myLat, myLon, theirLat, theirLon);
+          } else {
+            // Fallback to random distance if location not available
+            distance = Math.floor(Math.random() * filters.distance) + 1;
+          }
 
           return {
             ...profile,
             photos: photos?.map(p => getPhotoUrl(p.storage_path)) || [],
-            distance: mockDistance,
+            distance,
           } as DiscoverProfile;
         })
       );
@@ -119,6 +148,7 @@ export const useExploreProfiles = (filters: ExploreFilters, category?: string) =
 
 export const useNearbyProfiles = (maxDistance: number = 10) => {
   const { user } = useAuth();
+  const { data: myProfile } = useProfile();
 
   return useQuery({
     queryKey: ['nearby-profiles', user?.id, maxDistance],
@@ -143,6 +173,10 @@ export const useNearbyProfiles = (maxDistance: number = 10) => {
 
       const unswiped = profiles?.filter(p => !swipedUserIds.includes(p.user_id)) || [];
 
+      // Get my location for distance calculation
+      const myLat = (myProfile as any)?.latitude;
+      const myLon = (myProfile as any)?.longitude;
+
       const profilesWithPhotos = await Promise.all(
         unswiped.map(async (profile) => {
           const { data: photos } = await supabase
@@ -151,15 +185,29 @@ export const useNearbyProfiles = (maxDistance: number = 10) => {
             .eq('user_id', profile.user_id)
             .order('display_order', { ascending: true });
 
+          // Calculate real distance if both have location data
+          const theirLat = (profile as any).latitude;
+          const theirLon = (profile as any).longitude;
+          let distance: number;
+          
+          if (myLat && myLon && theirLat && theirLon) {
+            distance = calculateDistance(myLat, myLon, theirLat, theirLon);
+          } else {
+            distance = Math.floor(Math.random() * maxDistance) + 1;
+          }
+
           return {
             ...profile,
             photos: photos?.map(p => getPhotoUrl(p.storage_path)) || [],
-            distance: Math.floor(Math.random() * maxDistance) + 1,
+            distance,
           } as DiscoverProfile;
         })
       );
 
-      return profilesWithPhotos.filter(p => p.photos.length > 0);
+      // Filter to only include profiles within maxDistance
+      return profilesWithPhotos
+        .filter(p => p.photos.length > 0 && p.distance <= maxDistance)
+        .sort((a, b) => a.distance - b.distance);
     },
     enabled: !!user,
   });
@@ -167,6 +215,7 @@ export const useNearbyProfiles = (maxDistance: number = 10) => {
 
 export const useProfilesByInterest = (interest: string) => {
   const { user } = useAuth();
+  const { data: myProfile } = useProfile();
 
   return useQuery({
     queryKey: ['profiles-by-interest', user?.id, interest],
@@ -192,6 +241,10 @@ export const useProfilesByInterest = (interest: string) => {
 
       const unswiped = profiles?.filter(p => !swipedUserIds.includes(p.user_id)) || [];
 
+      // Get my location for distance calculation
+      const myLat = (myProfile as any)?.latitude;
+      const myLon = (myProfile as any)?.longitude;
+
       const profilesWithPhotos = await Promise.all(
         unswiped.map(async (profile) => {
           const { data: photos } = await supabase
@@ -200,10 +253,21 @@ export const useProfilesByInterest = (interest: string) => {
             .eq('user_id', profile.user_id)
             .order('display_order', { ascending: true });
 
+          // Calculate real distance if both have location data
+          const theirLat = (profile as any).latitude;
+          const theirLon = (profile as any).longitude;
+          let distance: number;
+          
+          if (myLat && myLon && theirLat && theirLon) {
+            distance = calculateDistance(myLat, myLon, theirLat, theirLon);
+          } else {
+            distance = Math.floor(Math.random() * 20) + 1;
+          }
+
           return {
             ...profile,
             photos: photos?.map(p => getPhotoUrl(p.storage_path)) || [],
-            distance: Math.floor(Math.random() * 20) + 1,
+            distance,
           } as DiscoverProfile;
         })
       );
