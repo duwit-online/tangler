@@ -8,7 +8,8 @@ import {
   X, 
   Loader2,
   Heart,
-  Check
+  Check,
+  Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUpdateProfile, useUploadPhoto, useUserPhotos, getPhotoUrl, useDeletePhoto } from '@/hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import VideoRecorder from '@/components/onboarding/VideoRecorder';
 
 const INTERESTS = [
   'Travel', 'Music', 'Movies', 'Books', 'Fitness', 'Cooking',
@@ -38,6 +40,7 @@ const Onboarding = () => {
   const [location, setLocation] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -49,6 +52,7 @@ const Onboarding = () => {
 
   const steps = [
     { title: 'Add Photos', subtitle: 'Show your best self' },
+    { title: 'Video Intro', subtitle: 'Record a short introduction (optional)' },
     { title: 'About You', subtitle: 'Tell us who you are' },
     { title: 'Your Bio', subtitle: 'Write something interesting' },
     { title: 'Interests', subtitle: 'Pick at least 3' },
@@ -94,9 +98,10 @@ const Onboarding = () => {
   const canProceed = () => {
     switch (step) {
       case 0: return photos.length >= 1;
-      case 1: return displayName.trim() && age && parseInt(age) >= 18 && gender && lookingFor;
-      case 2: return bio.trim().length >= 20;
-      case 3: return selectedInterests.length >= 3;
+      case 1: return true; // Video is optional
+      case 2: return displayName.trim() && age && parseInt(age) >= 18 && gender && lookingFor;
+      case 3: return bio.trim().length >= 20;
+      case 4: return selectedInterests.length >= 3;
       default: return false;
     }
   };
@@ -227,8 +232,21 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 1: Basic Info */}
+            {/* Step 1: Video Introduction */}
             {step === 1 && (
+              <div className="space-y-4">
+                <VideoRecorder
+                  onVideoUploaded={setVideoUrl}
+                  existingVideoUrl={videoUrl}
+                />
+                <p className="text-center text-sm text-muted-foreground">
+                  Video introductions help you stand out and get more matches!
+                </p>
+              </div>
+            )}
+
+            {/* Step 2: Basic Info */}
+            {step === 2 && (
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -313,8 +331,8 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 2: Bio */}
-            {step === 2 && (
+            {/* Step 3: Bio */}
+            {step === 3 && (
               <div className="space-y-4">
                 <Textarea
                   value={bio}
@@ -330,8 +348,8 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 3: Interests */}
-            {step === 3 && (
+            {/* Step 4: Interests */}
+            {step === 4 && (
               <div>
                 <div className="flex flex-wrap gap-2">
                   {INTERESTS.map((interest) => (
