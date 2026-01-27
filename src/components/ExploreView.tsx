@@ -32,7 +32,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
   
   const swipeMutation = useSwipe();
 
-  // Fetch profiles with different queries
   const { data: nearbyData, isLoading: nearbyLoading } = useNearbyProfiles(10);
   const { 
     data: exploreData, 
@@ -42,7 +41,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
     isFetchingNextPage 
   } = useExploreProfiles(filters, selectedCategory || undefined);
 
-  // Fetch profiles by interests for carousels
   const travelProfiles = useProfilesByInterest("travel");
   const fitnessProfiles = useProfilesByInterest("fitness");
   const musicProfiles = useProfilesByInterest("music");
@@ -50,7 +48,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
 
   const allExploreProfiles = exploreData?.pages.flatMap(page => page.profiles) || [];
 
-  // Infinite scroll
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
     if (isFetchingNextPage) return;
@@ -100,17 +97,17 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-24">
+    <div className="min-h-screen pt-16 pb-20">
       {/* Header */}
-      <div className="px-4 mb-4">
-        <div className="flex items-center gap-3">
+      <div className="px-3 mb-3">
+        <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name or interest..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-full bg-card border-border"
+              className="pl-9 h-10 rounded-full bg-card border-border text-sm"
             />
           </div>
           <ExploreFiltersSheet
@@ -123,7 +120,7 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
       </div>
 
       {/* Categories */}
-      <div className="mb-6">
+      <div className="mb-4">
         <CategoryPills
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
@@ -131,18 +128,15 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
       </div>
 
       {/* Content */}
-      <div className="space-y-8">
-        {/* New Matches This Week - Special Section */}
+      <div className="space-y-6">
         {!selectedCategory && (
           <NewMatchesSection onProfileClick={setSelectedProfile} />
         )}
 
-        {/* Who Liked You - Premium Section */}
         {!selectedCategory && onViewLikes && (
           <WhoLikedYouSection onViewAll={onViewLikes} isPremium={true} />
         )}
 
-        {/* Nearby Section */}
         {!selectedCategory && (
           <ProfileCarousel
             profiles={nearbyData || []}
@@ -153,7 +147,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
           />
         )}
 
-        {/* Category-specific or For You content */}
         {selectedCategory ? (
           <motion.div
             key={selectedCategory}
@@ -170,7 +163,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
           </motion.div>
         ) : (
           <>
-            {/* Travel Lovers */}
             <ProfileCarousel
               profiles={travelProfiles.data || []}
               title="Travel Lovers"
@@ -179,7 +171,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
               onLike={handleLike}
             />
 
-            {/* Fitness Enthusiasts */}
             <ProfileCarousel
               profiles={fitnessProfiles.data || []}
               title="Fitness Enthusiasts"
@@ -188,7 +179,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
               onLike={handleLike}
             />
 
-            {/* Music Lovers */}
             <ProfileCarousel
               profiles={musicProfiles.data || []}
               title="Music Lovers"
@@ -197,7 +187,6 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
               onLike={handleLike}
             />
 
-            {/* Foodies */}
             <ProfileCarousel
               profiles={foodProfiles.data || []}
               title="Foodies"
@@ -208,20 +197,19 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
           </>
         )}
 
-        {/* All Profiles (Infinite scroll) */}
         {!selectedCategory && (
-          <div className="px-4">
-            <h3 className="font-serif text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <div className="px-3">
+            <h3 className="font-serif text-base font-semibold text-foreground mb-3 flex items-center gap-2">
               <span>🔥</span> Explore All
             </h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {allExploreProfiles.map((profile, index) => (
                 <motion.div
                   key={profile.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group shadow-card"
+                  className="relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group shadow-card active:scale-[0.98] transition-transform"
                   onClick={() => setSelectedProfile(profile)}
                 >
                   <img
@@ -230,34 +218,31 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 text-card">
-                    <p className="font-medium text-sm">
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5 text-card">
+                    <p className="font-medium text-sm truncate">
                       {profile.display_name}, {profile.age}
                     </p>
-                    <p className="text-xs text-card/80">{profile.distance} mi away</p>
+                    <p className="text-xs text-card/80">{profile.distance} mi</p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            {/* Load more trigger */}
-            <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+            <div ref={loadMoreRef} className="h-16 flex items-center justify-center">
               {isFetchingNextPage && (
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
               )}
             </div>
           </div>
         )}
 
-        {/* Loading state */}
         {(exploreLoading || nearbyLoading) && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         )}
       </div>
 
-      {/* Profile Detail Modal */}
       <ProfileDetailModal
         profile={selectedProfile}
         isOpen={!!selectedProfile}

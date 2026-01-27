@@ -7,7 +7,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
@@ -16,6 +16,16 @@ export default {
       fontFamily: {
         sans: ['Outfit', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.8125rem', { lineHeight: '1.25rem' }],
+        'base': ['0.875rem', { lineHeight: '1.5rem' }],
+        'lg': ['1rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.125rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.25rem', { lineHeight: '2rem' }],
+        '3xl': ['1.5rem', { lineHeight: '2.25rem' }],
+        '4xl': ['1.875rem', { lineHeight: '2.5rem' }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,6 +61,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        wine: {
+          DEFAULT: "hsl(var(--wine))",
+          light: "hsl(var(--wine-light))",
+          dark: "hsl(var(--wine-dark))",
+        },
         coral: {
           DEFAULT: "hsl(var(--coral))",
           light: "hsl(var(--coral-light))",
@@ -63,6 +78,8 @@ export default {
         burgundy: "hsl(var(--burgundy))",
         cream: "hsl(var(--cream))",
         peach: "hsl(var(--peach))",
+        success: "hsl(var(--success))",
+        online: "hsl(var(--online))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -81,6 +98,10 @@ export default {
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
         "3xl": "calc(var(--radius) + 16px)",
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
       },
       keyframes: {
         "accordion-down": {

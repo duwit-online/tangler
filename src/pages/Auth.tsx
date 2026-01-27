@@ -28,7 +28,6 @@ const Auth = () => {
     e.preventDefault();
     setErrors({});
     
-    // Validate input
     const result = authSchema.safeParse({ email, password });
     if (!result.success) {
       const fieldErrors: { email?: string; password?: string } = {};
@@ -63,20 +62,20 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-warm flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {/* Logo and branding */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
-        <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow">
-          <Heart className="w-10 h-10 text-primary-foreground fill-primary-foreground" />
+        <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-glow">
+          <Heart className="w-8 h-8 text-primary-foreground fill-primary-foreground" />
         </div>
-        <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
+        <h1 className="text-3xl font-serif font-bold text-foreground mb-1">
           Tangle
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Find your perfect match
         </p>
       </motion.div>
@@ -88,12 +87,12 @@ const Auth = () => {
         transition={{ delay: 0.1 }}
         className="w-full max-w-sm"
       >
-        <div className="bg-card rounded-3xl p-6 shadow-elevated">
+        <div className="bg-card rounded-2xl p-5 shadow-elevated">
           {/* Tab switcher */}
-          <div className="flex bg-secondary rounded-xl p-1 mb-6">
+          <div className="flex bg-secondary rounded-xl p-1 mb-5">
             <button
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 isLogin 
                   ? 'bg-card text-foreground shadow-card' 
                   : 'text-muted-foreground'
@@ -103,7 +102,7 @@ const Auth = () => {
             </button>
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 !isLogin 
                   ? 'bg-card text-foreground shadow-card' 
                   : 'text-muted-foreground'
@@ -114,34 +113,34 @@ const Auth = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="space-y-1.5">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="email"
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`pl-10 h-12 rounded-xl bg-secondary border-0 ${
+                  className={`pl-9 h-11 rounded-xl bg-secondary border-0 text-sm ${
                     errors.email ? 'ring-2 ring-destructive' : ''
                   }`}
                 />
               </div>
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
+                <p className="text-xs text-destructive">{errors.email}</p>
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`pl-10 pr-10 h-12 rounded-xl bg-secondary border-0 ${
+                  className={`pl-9 pr-9 h-11 rounded-xl bg-secondary border-0 text-sm ${
                     errors.password ? 'ring-2 ring-destructive' : ''
                   }`}
                 />
@@ -150,21 +149,21 @@ const Auth = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password}</p>
+                <p className="text-xs text-destructive">{errors.password}</p>
               )}
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl gradient-primary text-primary-foreground font-semibold"
+              className="w-full h-11 rounded-xl gradient-primary text-primary-foreground font-semibold text-sm"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : isLogin ? (
                 'Sign In'
               ) : (
@@ -174,14 +173,14 @@ const Auth = () => {
           </form>
 
           {isLogin && (
-            <button className="w-full text-center text-sm text-primary mt-4 hover:underline">
+            <button className="w-full text-center text-xs text-primary mt-3 hover:underline">
               Forgot password?
             </button>
           )}
         </div>
 
         {/* Terms */}
-        <p className="text-center text-xs text-muted-foreground mt-6 px-4">
+        <p className="text-center text-[10px] text-muted-foreground mt-4 px-4 leading-relaxed">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </motion.div>

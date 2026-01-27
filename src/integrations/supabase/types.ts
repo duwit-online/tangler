@@ -43,6 +43,7 @@ export type Database = {
           match_id: string
           read_at: string | null
           sender_id: string
+          status: string | null
         }
         Insert: {
           content: string
@@ -51,6 +52,7 @@ export type Database = {
           match_id: string
           read_at?: string | null
           sender_id: string
+          status?: string | null
         }
         Update: {
           content?: string
@@ -59,6 +61,7 @@ export type Database = {
           match_id?: string
           read_at?: string | null
           sender_id?: string
+          status?: string | null
         }
         Relationships: [
           {
@@ -112,6 +115,7 @@ export type Database = {
           gender: string | null
           id: string
           interests: string[] | null
+          last_seen: string | null
           latitude: number | null
           location: string | null
           longitude: number | null
@@ -128,6 +132,7 @@ export type Database = {
           gender?: string | null
           id?: string
           interests?: string[] | null
+          last_seen?: string | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
@@ -144,6 +149,7 @@ export type Database = {
           gender?: string | null
           id?: string
           interests?: string[] | null
+          last_seen?: string | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
@@ -247,6 +253,7 @@ export type Database = {
         Returns: boolean
       }
       is_match_participant: { Args: { match_id: string }; Returns: boolean }
+      is_user_online: { Args: { target_user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
