@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Star, Crown, Loader2, Sparkles, Check, X } from "lucide-react";
+import { Heart, Star, Crown, Loader2, Sparkles, Check, X, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useWhoLikedMe, useWhoILiked, useLikeBack, LikeProfile } from "@/hooks/useLikes";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,6 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
   };
 
   const handlePass = async (profile: LikeProfile) => {
-    // We could implement a "pass" feature here if needed
     toast.info(`Passed on ${profile.display_name}`);
   };
 
@@ -54,62 +53,63 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="relative rounded-2xl overflow-hidden bg-card shadow-card"
+      className="relative rounded-xl overflow-hidden bg-card shadow-card"
     >
       <div className="relative aspect-[3/4]">
-        <img
-          src={profile.photos[0]}
-          alt={profile.display_name || "Profile"}
-          className="w-full h-full object-cover"
-        />
+        {profile.photos[0] ? (
+          <img
+            src={profile.photos[0]}
+            alt={profile.display_name || "Profile"}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-secondary flex items-center justify-center">
+            <User className="w-12 h-12 text-muted-foreground" />
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
         
-        {/* Super Like indicator */}
         {profile.direction === 'superlike' && (
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-yellow-500/90 text-white border-0">
-              <Star className="w-3 h-3 mr-1 fill-current" />
-              Super Like
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-accent/90 text-accent-foreground border-0 text-[10px] px-2 py-0.5">
+              <Star className="w-2.5 h-2.5 mr-0.5 fill-current" />
+              Super
             </Badge>
           </div>
         )}
 
-        {/* Profile info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-card">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-lg">
-              {profile.display_name}, {profile.age}
-            </h3>
-          </div>
-          <p className="text-card/80 text-sm mb-2">
+        <div className="absolute bottom-0 left-0 right-0 p-2.5 text-card">
+          <h3 className="font-semibold text-sm truncate">
+            {profile.display_name}, {profile.age}
+          </h3>
+          <p className="text-card/80 text-xs">
             {profile.distance} mi away
           </p>
-          <p className="text-card/60 text-xs">
+          <p className="text-card/60 text-[10px] mt-0.5">
             {formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true })}
           </p>
         </div>
       </div>
 
-      {/* Action buttons for received likes */}
       {showActions && (
-        <div className="flex gap-2 p-3 bg-card">
+        <div className="flex gap-1.5 p-2 bg-card">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePass(profile)}
-            className="flex-1"
+            className="flex-1 h-8 text-xs"
           >
-            <X className="w-4 h-4 mr-1" />
+            <X className="w-3.5 h-3.5 mr-1" />
             Pass
           </Button>
           <Button
             size="sm"
             onClick={() => handleLikeBack(profile)}
-            className="flex-1 gradient-primary text-primary-foreground"
+            className="flex-1 h-8 text-xs gradient-primary text-primary-foreground"
             disabled={likeBack.isPending}
           >
-            <Heart className="w-4 h-4 mr-1 fill-current" />
-            Like Back
+            <Heart className="w-3.5 h-3.5 mr-1 fill-current" />
+            Like
           </Button>
         </div>
       )}
@@ -117,51 +117,52 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
   );
 
   return (
-    <div className="pt-20 pb-24 px-4">
-      {/* Header */}
+    <div className="pt-16 pb-20 px-3">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="mb-4"
       >
-        <div className="flex items-center gap-2 mb-2">
-          <h1 className="text-3xl font-serif font-bold text-foreground">
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="text-2xl font-serif font-bold text-foreground">
             Likes
           </h1>
-          <Badge className="bg-primary/10 text-primary border-primary/20">
-            <Crown className="w-3 h-3 mr-1" />
+          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+            <Crown className="w-2.5 h-2.5 mr-0.5" />
             Premium
           </Badge>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           See who's interested in you
         </p>
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-1.5 mb-4">
         <Button
           variant={activeTab === 'received' ? 'default' : 'outline'}
+          size="sm"
           onClick={() => setActiveTab('received')}
-          className={activeTab === 'received' ? 'gradient-primary text-primary-foreground' : ''}
+          className={`flex-1 h-9 text-xs ${activeTab === 'received' ? 'gradient-primary text-primary-foreground' : ''}`}
         >
-          <Heart className="w-4 h-4 mr-2" />
+          <Heart className="w-3.5 h-3.5 mr-1.5" />
           Liked You ({whoLikedMe.length})
         </Button>
         <Button
           variant={activeTab === 'sent' ? 'default' : 'outline'}
+          size="sm"
           onClick={() => setActiveTab('sent')}
-          className={activeTab === 'sent' ? 'gradient-primary text-primary-foreground' : ''}
+          className={`flex-1 h-9 text-xs ${activeTab === 'sent' ? 'gradient-primary text-primary-foreground' : ''}`}
         >
-          <Sparkles className="w-4 h-4 mr-2" />
+          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
           You Liked ({whoILiked.length})
         </Button>
       </div>
 
       {/* Content */}
       {(activeTab === 'received' ? loadingReceived : loadingSent) ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <div className="flex justify-center py-10">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -173,7 +174,7 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
           >
             {activeTab === 'received' ? (
               whoLikedMe.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {whoLikedMe.map((profile) => renderProfileCard(profile, true))}
                 </div>
               ) : (
@@ -185,7 +186,7 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
               )
             ) : (
               whoILiked.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {whoILiked.map((profile) => renderProfileCard(profile, false))}
                 </div>
               ) : (
@@ -215,13 +216,13 @@ const EmptyState = ({
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="text-center py-16"
+    className="text-center py-14"
   >
-    <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
-      <Icon className="w-10 h-10 text-muted-foreground" />
+    <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
+      <Icon className="w-8 h-8 text-muted-foreground" />
     </div>
-    <h2 className="text-xl font-semibold text-foreground mb-2">{title}</h2>
-    <p className="text-muted-foreground max-w-xs mx-auto">{description}</p>
+    <h2 className="text-lg font-semibold text-foreground mb-1">{title}</h2>
+    <p className="text-sm text-muted-foreground max-w-xs mx-auto">{description}</p>
   </motion.div>
 );
 

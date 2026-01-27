@@ -14,6 +14,7 @@ import ExploreView from "@/components/ExploreView";
 import LikesView from "@/components/LikesView";
 import { useDiscoverProfiles, useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
 import { useSmartDiscoverProfiles } from "@/hooks/useSmartMatching";
+import { useUpdateLastSeen } from "@/hooks/useOnlineStatus";
 import { Loader2, Heart } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,7 +26,11 @@ const Index = () => {
     matchId: string;
     name: string;
     photo: string | null;
+    userId?: string;
   } | null>(null);
+
+  // Update last seen for online status
+  useUpdateLastSeen();
 
   // Use smart matching for discover - filters by gender preferences
   const { data: profiles = [], isLoading } = useSmartDiscoverProfiles();
@@ -89,11 +94,11 @@ const Index = () => {
     switch (activeTab) {
       case "discover":
         return (
-          <div className="flex flex-col h-full pt-20 pb-24">
-            <div className="relative flex-1 mx-4">
+          <div className="flex flex-col h-full pt-16 pb-18">
+            <div className="relative flex-1 mx-3">
               {isLoading ? (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
@@ -121,15 +126,15 @@ const Index = () => {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="absolute inset-0 flex flex-col items-center justify-center text-center p-8"
+                      className="absolute inset-0 flex flex-col items-center justify-center text-center p-6"
                     >
-                      <div className="w-24 h-24 rounded-full gradient-primary flex items-center justify-center mb-6 animate-pulse-glow">
-                        <Heart className="w-12 h-12 text-primary-foreground" />
+                      <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center mb-5 animate-pulse-glow">
+                        <Heart className="w-10 h-10 text-primary-foreground" />
                       </div>
-                      <h2 className="text-2xl font-serif font-semibold text-foreground mb-2">
+                      <h2 className="text-xl font-serif font-semibold text-foreground mb-2">
                         No more profiles
                       </h2>
-                      <p className="text-muted-foreground max-w-xs">
+                      <p className="text-sm text-muted-foreground max-w-xs">
                         You've seen everyone nearby. Check back later!
                       </p>
                     </motion.div>
@@ -166,7 +171,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background gradient-warm">
+    <div className="min-h-screen bg-background">
       <Header onNotificationClick={() => setActiveTab("notifications")} />
       
       <main className="min-h-screen max-w-md mx-auto">
@@ -212,6 +217,7 @@ const Index = () => {
           matchId={activeChat.matchId}
           matchName={activeChat.name}
           matchPhoto={activeChat.photo}
+          matchUserId={activeChat.userId}
           onBack={() => setActiveChat(null)}
         />
       )}
