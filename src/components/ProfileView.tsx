@@ -20,6 +20,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import ThemeSettings from "@/components/settings/ThemeSettings";
+import SettingsSheet from "@/components/settings/SettingsSheet";
+import EditProfileSheet from "@/components/profile/EditProfileSheet";
 
 const ProfileView = () => {
   const { signOut } = useAuth();
@@ -27,6 +29,8 @@ const ProfileView = () => {
   const { data: photos = [] } = useUserPhotos();
   const navigate = useNavigate();
   const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -35,10 +39,10 @@ const ProfileView = () => {
 
   const menuItems = [
     { icon: Palette, label: "Appearance", color: "text-foreground", action: () => setShowThemeSettings(true) },
-    { icon: Settings, label: "Settings", color: "text-foreground", action: () => {} },
-    { icon: Shield, label: "Privacy & Safety", color: "text-foreground", action: () => {} },
-    { icon: Bell, label: "Notifications", color: "text-foreground", action: () => {} },
-    { icon: HelpCircle, label: "Help & Support", color: "text-foreground", action: () => {} },
+    { icon: Settings, label: "Settings", color: "text-foreground", action: () => setShowSettings(true) },
+    { icon: Shield, label: "Privacy & Safety", color: "text-foreground", action: () => setShowSettings(true) },
+    { icon: Bell, label: "Notifications", color: "text-foreground", action: () => setShowSettings(true) },
+    { icon: HelpCircle, label: "Help & Support", color: "text-foreground", action: () => setShowSettings(true) },
     { icon: LogOut, label: "Log Out", color: "text-destructive", action: handleLogout },
   ];
 
@@ -73,7 +77,10 @@ const ProfileView = () => {
               </div>
             )}
           </div>
-          <button className="absolute bottom-0 right-0 w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-primary-foreground shadow-card">
+          <button 
+            onClick={() => setShowEditProfile(true)}
+            className="absolute bottom-0 right-0 w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-primary-foreground shadow-card"
+          >
             <Camera className="w-4 h-4" />
           </button>
         </div>
@@ -94,7 +101,7 @@ const ProfileView = () => {
           variant="outline"
           size="sm"
           className="mx-auto mt-3 flex items-center gap-1.5 h-9 text-sm"
-          onClick={() => navigate("/onboarding")}
+          onClick={() => setShowEditProfile(true)}
         >
           <Edit3 className="w-3.5 h-3.5" />
           Edit Profile
@@ -144,7 +151,10 @@ const ProfileView = () => {
             </div>
           ))}
           {photos.length < 6 && (
-            <button className="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary transition-colors">
+            <button 
+              onClick={() => setShowEditProfile(true)}
+              className="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+            >
               <Camera className="w-6 h-6" />
             </button>
           )}
@@ -218,6 +228,9 @@ const ProfileView = () => {
           </div>
         </SheetContent>
       </Sheet>
+
+      <SettingsSheet open={showSettings} onOpenChange={setShowSettings} />
+      <EditProfileSheet open={showEditProfile} onOpenChange={setShowEditProfile} />
     </div>
   );
 };

@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, Crown, Loader2, Sparkles, Check, X, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useWhoLikedMe, useWhoILiked, useLikeBack, LikeProfile } from "@/hooks/useLikes";
+import { useSwipe } from "@/hooks/useSwipes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import LikeProfileModal from "@/components/likes/LikeProfileModal";
 
 interface LikesViewProps {
   onOpenChat?: (chat: { matchId: string; name: string; photo: string | null }) => void;
@@ -13,13 +15,16 @@ interface LikesViewProps {
 
 const LikesView = ({ onOpenChat }: LikesViewProps) => {
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
+  const [selectedProfile, setSelectedProfile] = useState<LikeProfile | null>(null);
   const { data: whoLikedMe = [], isLoading: loadingReceived } = useWhoLikedMe();
   const { data: whoILiked = [], isLoading: loadingSent } = useWhoILiked();
   const likeBack = useLikeBack();
+  const swipe = useSwipe();
 
   const handleLikeBack = async (profile: LikeProfile) => {
     try {
       const result = await likeBack.mutateAsync({ userId: profile.user_id });
+      setSelectedProfile(null);
       if (result.match) {
         toast.success(`It's a match with ${profile.display_name}! 🎉`, {
           action: {
@@ -44,7 +49,17 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
   };
 
   const handlePass = async (profile: LikeProfile) => {
-    toast.info(`Passed on ${profile.display_name}`);
+    try {
+      await swipe.mutateAsync({ swipedId: profile.user_id, direction: 'pass' });
+      setSelectedProfile(null);
+      toast.info(`Passed on ${profile.display_name}`);
+    } catch (error) {
+      toast.error("Failed to pass");
+    }
+  };
+
+  const handleProfileClick = (profile: LikeProfile) => {
+    setSelectedProfile(profile);
   };
 
   const renderProfileCard = (profile: LikeProfile, showActions: boolean) => (
@@ -53,7 +68,8 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="relative rounded-xl overflow-hidden bg-card shadow-card"
+      onClick={() => handleProfileClick(profile)}
+      className="relative rounded-xl overflow-hidden bg-card shadow-card cursor-pointer active:scale-[0.98] transition-transform"
     >
       <div className="relative aspect-[3/4]">
         {profile.photos[0] ? (
@@ -96,7 +112,10 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handlePass(profile)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePass(profile);
+            }}
             className="flex-1 h-8 text-xs"
           >
             <X className="w-3.5 h-3.5 mr-1" />
@@ -104,7 +123,10 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
           </Button>
           <Button
             size="sm"
-            onClick={() => handleLikeBack(profile)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLikeBack(profile);
+            }}
             className="flex-1 h-8 text-xs gradient-primary text-primary-foreground"
             disabled={likeBack.isPending}
           >
@@ -200,6 +222,16 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
           </motion.div>
         </AnimatePresence>
       )}
+
+      {/* Profile Modal */}
+      <LikeProfileModal
+        profile={selectedProfile}
+        isOpen={!!selectedProfile}
+        onClose={() => setSelectedProfile(null)}
+        onLikeBack={handleLikeBack}
+        onPass={handlePass}
+        showActions={activeTab === 'received'}
+      />
     </div>
   );
 };

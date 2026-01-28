@@ -12,16 +12,20 @@ import ChatView from "@/components/ChatView";
 import NotificationsView from "@/components/NotificationsView";
 import ExploreView from "@/components/ExploreView";
 import LikesView from "@/components/LikesView";
-import { useDiscoverProfiles, useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
+import { useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
 import { useSmartDiscoverProfiles } from "@/hooks/useSmartMatching";
 import { useUpdateLastSeen } from "@/hooks/useOnlineStatus";
-import { Loader2, Heart } from "lucide-react";
+import { useDiscoverSearch } from "@/hooks/useDiscoverSearch";
+import { useSuperLikeAnimation } from "@/hooks/useSuperLikeAnimation";
+import { Loader2, Heart, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("discover");
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+  const [showDiscoverSearch, setShowDiscoverSearch] = useState(false);
   const [activeChat, setActiveChat] = useState<{
     matchId: string;
     name: string;
@@ -35,9 +39,13 @@ const Index = () => {
   // Use smart matching for discover - filters by gender preferences
   const { data: profiles = [], isLoading } = useSmartDiscoverProfiles();
   const { swipe: swipeMutation, undo: undoMutation, canUndo } = useSwipeWithUndo();
+  const { searchQuery, setSearchQuery, filteredProfiles, isSearching } = useDiscoverSearch(profiles);
+  const { triggerSuperLikeEffect } = useSuperLikeAnimation();
+
+  const displayProfiles = isSearching ? filteredProfiles : profiles;
 
   const handleSwipe = async (direction: "left" | "right") => {
-    const currentProfile = profiles[0];
+    const currentProfile = displayProfiles[0];
     if (!currentProfile) return;
 
     const swipeDirection = direction === "right" ? "like" : "pass";
@@ -60,8 +68,11 @@ const Index = () => {
   };
 
   const handleSuperLike = async () => {
-    const currentProfile = profiles[0];
+    const currentProfile = displayProfiles[0];
     if (!currentProfile) return;
+
+    // Trigger confetti animation
+    triggerSuperLikeEffect();
 
     try {
       const result = await swipeMutation.mutateAsync({
@@ -69,6 +80,8 @@ const Index = () => {
         direction: "superlike",
         profile: currentProfile,
       });
+
+      toast.success(`Super liked ${currentProfile.display_name}! ⭐`);
 
       if (result.match) {
         setMatchedProfile(currentProfile);
@@ -95,6 +108,45 @@ const Index = () => {
       case "discover":
         return (
           <div className="flex flex-col h-full pt-16 pb-18">
+            {/* Search Bar */}
+            <div className="px-3 mb-2">
+              {showDiscoverSearch ? (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2"
+                >
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, interests..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-10 rounded-full bg-card border-border text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowDiscoverSearch(false);
+                      setSearchQuery("");
+                    }}
+                    className="p-2 hover:bg-secondary rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              ) : (
+                <button
+                  onClick={() => setShowDiscoverSearch(true)}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border text-muted-foreground text-sm hover:border-primary/50 transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                  Search profiles...
+                </button>
+              )}
+            </div>
+
             <div className="relative flex-1 mx-3">
               {isLoading ? (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -102,8 +154,8 @@ const Index = () => {
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
-                  {profiles.length > 0 ? (
-                    profiles.slice(0, 3).reverse().map((profile, index) => (
+                  {displayProfiles.length > 0 ? (
+                    displayProfiles.slice(0, 3).reverse().map((profile, index) => (
                       <ProfileCard
                         key={profile.id}
                         profile={{
@@ -119,7 +171,7 @@ const Index = () => {
                           verified: true,
                         }}
                         onSwipe={handleSwipe}
-                        isTop={index === Math.min(profiles.length, 3) - 1}
+                        isTop={index === Math.min(displayProfiles.length, 3) - 1}
                       />
                     ))
                   ) : (
@@ -132,10 +184,12 @@ const Index = () => {
                         <Heart className="w-10 h-10 text-primary-foreground" />
                       </div>
                       <h2 className="text-xl font-serif font-semibold text-foreground mb-2">
-                        No more profiles
+                        {isSearching ? "No results found" : "No more profiles"}
                       </h2>
                       <p className="text-sm text-muted-foreground max-w-xs">
-                        You've seen everyone nearby. Check back later!
+                        {isSearching 
+                          ? "Try a different search term" 
+                          : "You've seen everyone nearby. Check back later!"}
                       </p>
                     </motion.div>
                   )}
@@ -143,7 +197,7 @@ const Index = () => {
               )}
             </div>
 
-            {profiles.length > 0 && (
+            {displayProfiles.length > 0 && (
               <SwipeButtons
                 onSwipe={handleSwipe}
                 onSuperLike={handleSuperLike}
