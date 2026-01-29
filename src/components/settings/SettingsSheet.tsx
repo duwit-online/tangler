@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { 
   ChevronRight, 
   Bell, 
@@ -14,15 +15,15 @@ import {
   Smartphone,
   CreditCard,
   Star,
-  Info,
-  ExternalLink
+  ExternalLink,
+  Crown
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import NotificationSettings from "./NotificationSettings";
+import PremiumSheet from "@/components/premium/PremiumSheet";
+import { useHasPremium } from "@/hooks/useSubscription";
 
 interface SettingsSheetProps {
   open: boolean;
@@ -32,12 +33,20 @@ interface SettingsSheetProps {
 type SettingsSection = 'main' | 'notifications' | 'privacy' | 'account' | 'about';
 
 const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
+  const navigate = useNavigate();
+  const hasPremium = useHasPremium();
   const [currentSection, setCurrentSection] = useState<SettingsSection>('main');
   const [discoveryEnabled, setDiscoveryEnabled] = useState(true);
   const [showOnlineStatus, setShowOnlineStatus] = useState(true);
   const [showDistance, setShowDistance] = useState(true);
   const [showAge, setShowAge] = useState(true);
   const [readReceipts, setReadReceipts] = useState(true);
+  const [showPremium, setShowPremium] = useState(false);
+
+  const navigateTo = (path: string) => {
+    onOpenChange(false);
+    navigate(path);
+  };
 
   const renderMainMenu = () => (
     <motion.div
@@ -46,6 +55,23 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
       exit={{ opacity: 0 }}
       className="space-y-6"
     >
+      {/* Premium Banner */}
+      {!hasPremium && (
+        <button
+          onClick={() => setShowPremium(true)}
+          className="w-full p-4 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <Crown className="w-6 h-6" />
+            <div className="text-left">
+              <p className="font-semibold text-sm">Get Premium</p>
+              <p className="text-xs opacity-90">See who liked you & more</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+
       {/* Account Section */}
       <div>
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
@@ -70,7 +96,8 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
           <SettingsItem
             icon={CreditCard}
             label="Subscription"
-            subtitle="Free Plan"
+            subtitle={hasPremium ? "Premium" : "Free Plan"}
+            onClick={() => setShowPremium(true)}
           />
         </div>
       </div>
@@ -123,12 +150,12 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
           <SettingsItem
             icon={HelpCircle}
             label="Help & Support"
-            external
+            onClick={() => navigateTo('/support')}
           />
           <SettingsItem
-            icon={Mail}
-            label="Contact Us"
-            external
+            icon={Shield}
+            label="Safety Center"
+            onClick={() => navigateTo('/safety')}
           />
           <SettingsItem
             icon={Star}
@@ -144,10 +171,21 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
           Legal
         </h3>
         <div className="bg-card rounded-xl overflow-hidden shadow-card">
-          <SettingsItem icon={FileText} label="Terms of Service" external />
-          <SettingsItem icon={Shield} label="Privacy Policy" external />
-          <SettingsItem icon={FileText} label="Cookie Policy" external />
-          <SettingsItem icon={FileText} label="Community Guidelines" external />
+          <SettingsItem 
+            icon={FileText} 
+            label="Terms of Service" 
+            onClick={() => navigateTo('/terms')}
+          />
+          <SettingsItem 
+            icon={Shield} 
+            label="Privacy Policy" 
+            onClick={() => navigateTo('/privacy')}
+          />
+          <SettingsItem 
+            icon={FileText} 
+            label="Community Guidelines" 
+            onClick={() => navigateTo('/safety')}
+          />
         </div>
       </div>
 
@@ -156,6 +194,8 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
         <p className="text-xs text-muted-foreground">Tangle v1.0.0</p>
         <p className="text-xs text-muted-foreground mt-1">Made with ❤️</p>
       </div>
+
+      <PremiumSheet open={showPremium} onOpenChange={setShowPremium} />
     </motion.div>
   );
 
