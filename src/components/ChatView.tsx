@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Send, MoreVertical } from 'lucide-react';
+import { ChevronLeft, Send, MoreVertical, Flag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import ReportUserSheet from '@/components/ReportUserSheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useMessages, useSendMessage, useMarkAsRead, useTypingIndicator } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsUserOnline } from '@/hooks/useOnlineStatus';
@@ -19,6 +21,7 @@ interface ChatViewProps {
 
 const ChatView = ({ matchId, matchName, matchPhoto, matchUserId, onBack }: ChatViewProps) => {
   const [message, setMessage] = useState('');
+  const [showReport, setShowReport] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
@@ -116,9 +119,19 @@ const ChatView = ({ matchId, matchName, matchPhoto, matchUserId, onBack }: ChatV
           ) : null}
         </div>
 
-        <button className="p-1.5 rounded-full hover:bg-secondary">
-          <MoreVertical className="w-4 h-4 text-muted-foreground" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1.5 rounded-full hover:bg-secondary">
+              <MoreVertical className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setShowReport(true)} className="text-destructive">
+              <Flag className="w-4 h-4 mr-2" />
+              Report User
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Messages */}
@@ -246,6 +259,16 @@ const ChatView = ({ matchId, matchName, matchPhoto, matchUserId, onBack }: ChatV
           </Button>
         </div>
       </div>
+      {matchUserId && (
+        <ReportUserSheet
+          open={showReport}
+          onOpenChange={setShowReport}
+          reportedUserId={matchUserId}
+          reportedUserName={matchName}
+          contentType="chat"
+          contentId={matchId}
+        />
+      )}
     </div>
   );
 };

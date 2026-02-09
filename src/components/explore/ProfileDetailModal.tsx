@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Heart, MapPin, Verified, ChevronLeft, ChevronRight, Star, Map } from "lucide-react";
+import { X, Heart, MapPin, Verified, ChevronLeft, ChevronRight, Star, Map, Flag } from "lucide-react";
 import { DiscoverProfile } from "@/hooks/useSwipes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import LocationMap from "@/components/LocationMap";
+import ReportUserSheet from "@/components/ReportUserSheet";
 
 interface ProfileDetailModalProps {
   profile: DiscoverProfile | null;
@@ -17,6 +18,7 @@ interface ProfileDetailModalProps {
 const ProfileDetailModal = ({ profile, isOpen, onClose, onLike, onSuperLike }: ProfileDetailModalProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showMap, setShowMap] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   if (!profile) return null;
 
@@ -49,14 +51,24 @@ const ProfileDetailModal = ({ profile, isOpen, onClose, onLike, onSuperLike }: P
             >
               <X className="w-5 h-5" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-card/80 backdrop-blur-sm"
-              onClick={() => setShowMap(!showMap)}
-            >
-              <Map className="w-5 h-5" />
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-card/80 backdrop-blur-sm"
+                onClick={() => setShowReport(true)}
+              >
+                <Flag className="w-5 h-5 text-destructive" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-card/80 backdrop-blur-sm"
+                onClick={() => setShowMap(!showMap)}
+              >
+                <Map className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
 
           <div className="h-full overflow-y-auto pb-24">
@@ -181,6 +193,12 @@ const ProfileDetailModal = ({ profile, isOpen, onClose, onLike, onSuperLike }: P
               </Button>
             </div>
           </div>
+          <ReportUserSheet
+            open={showReport}
+            onOpenChange={setShowReport}
+            reportedUserId={profile.user_id}
+            reportedUserName={profile.display_name || undefined}
+          />
         </motion.div>
       )}
     </AnimatePresence>
