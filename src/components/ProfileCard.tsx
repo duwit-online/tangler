@@ -16,9 +16,10 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
   const [showMap, setShowMap] = useState(false);
   const x = useMotionValue(0);
   
-  const rotate = useTransform(x, [-300, 0, 300], [-25, 0, 25]);
-  const likeOpacity = useTransform(x, [0, 100], [0, 1]);
-  const nopeOpacity = useTransform(x, [-100, 0], [1, 0]);
+  const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
+  const likeOpacity = useTransform(x, [0, 120], [0, 1]);
+  const nopeOpacity = useTransform(x, [-120, 0], [1, 0]);
+  const cardScale = useTransform(x, [-300, 0, 300], [0.95, 1, 0.95]);
 
   const handleDragEnd = (_: any, info: PanInfo) => {
     if (Math.abs(info.offset.x) > 100) {
@@ -41,20 +42,20 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
   return (
     <motion.div
       className="absolute w-full h-full cursor-grab active:cursor-grabbing"
-      style={{ x, rotate, zIndex: isTop ? 10 : 0 }}
+      style={{ x, rotate, scale: cardScale, zIndex: isTop ? 10 : 0 }}
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
       onDragEnd={handleDragEnd}
-      initial={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.5 }}
-      animate={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.7 }}
+      initial={{ scale: isTop ? 1 : 0.92, opacity: isTop ? 1 : 0.4 }}
+      animate={{ scale: isTop ? 1 : 0.92, opacity: isTop ? 1 : 0.6 }}
       exit={{ 
-        x: x.get() > 0 ? 300 : -300, 
+        x: x.get() > 0 ? 400 : -400, 
         opacity: 0,
-        transition: { duration: 0.3 }
+        transition: { duration: 0.35, ease: "easeOut" }
       }}
     >
-      <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-elevated gradient-card">
+      <div className="relative w-full h-full rounded-[28px] overflow-hidden shadow-elevated">
         {/* Image or Map */}
         <div className="absolute inset-0">
           {showMap && profile.location ? (
@@ -64,96 +65,88 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
               src={profile.images[currentImageIndex]}
               alt={profile.name}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
+          {/* Cinematic gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/5" />
         </div>
 
-        {/* Map toggle button */}
+        {/* Map toggle */}
         {profile.location && (
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowMap(!showMap);
-            }}
-            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-card/20 backdrop-blur-sm text-card hover:bg-card/40 transition-colors"
+            onClick={(e) => { e.stopPropagation(); setShowMap(!showMap); }}
+            className="absolute top-16 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-xl glass text-white/90 hover:bg-white/20 transition-colors"
           >
-            <Map className={`w-5 h-5 ${showMap ? 'text-primary' : ''}`} />
+            <Map className={`w-4 h-4 ${showMap ? 'text-primary' : ''}`} />
           </button>
         )}
 
-        {/* Image navigation indicators */}
-        <div className="absolute top-4 left-4 right-4 flex gap-1">
+        {/* Image dots */}
+        <div className="absolute top-4 left-4 right-4 flex gap-1.5">
           {profile.images.map((_, idx) => (
             <div
               key={idx}
-              className={`h-1 flex-1 rounded-full transition-colors ${
-                idx === currentImageIndex ? "bg-card" : "bg-card/40"
+              className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${
+                idx === currentImageIndex 
+                  ? "bg-white" 
+                  : "bg-white/30"
               }`}
             />
           ))}
         </div>
 
-        {/* Image navigation buttons */}
+        {/* Nav buttons */}
         {profile.images.length > 1 && (
           <>
-            <button
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-card/20 backdrop-blur-sm text-card hover:bg-card/40 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-card/20 backdrop-blur-sm text-card hover:bg-card/40 transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+            <button onClick={prevImage} className="absolute left-0 top-12 bottom-32 w-1/3" />
+            <button onClick={nextImage} className="absolute right-0 top-12 bottom-32 w-1/3" />
           </>
         )}
 
-        {/* Like/Nope indicators */}
+        {/* Like/Nope stamps */}
         <motion.div
-          className="absolute top-20 left-6 border-4 border-primary text-primary font-bold text-3xl px-4 py-2 rounded-lg rotate-[-20deg]"
+          className="absolute top-24 left-6 border-[3px] border-green-400 text-green-400 font-extrabold text-2xl px-4 py-1.5 rounded-xl rotate-[-15deg] tracking-wider"
           style={{ opacity: likeOpacity }}
         >
           LIKE
         </motion.div>
         <motion.div
-          className="absolute top-20 right-6 border-4 border-destructive text-destructive font-bold text-3xl px-4 py-2 rounded-lg rotate-[20deg]"
+          className="absolute top-24 right-6 border-[3px] border-red-400 text-red-400 font-extrabold text-2xl px-4 py-1.5 rounded-xl rotate-[15deg] tracking-wider"
           style={{ opacity: nopeOpacity }}
         >
           NOPE
         </motion.div>
 
         {/* Profile info */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-card">
-          <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-3xl font-serif font-semibold">
-              {profile.name}, {profile.age}
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div className="flex items-end gap-2 mb-2">
+            <h2 className="text-[28px] font-serif font-bold text-white leading-tight">
+              {profile.name}
             </h2>
+            <span className="text-xl text-white/80 font-light mb-0.5">{profile.age}</span>
             {profile.verified && (
-              <Verified className="w-6 h-6 text-primary fill-primary" />
+              <Verified className="w-5 h-5 text-primary fill-primary mb-1" />
             )}
           </div>
           
           {profile.occupation && (
-            <p className="text-card/90 text-lg mb-2">{profile.occupation}</p>
+            <p className="text-white/80 text-sm mb-1.5">{profile.occupation}</p>
           )}
           
-          <div className="flex items-center gap-1 text-card/80 mb-3">
-            <MapPin className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-white/60 text-xs mb-3">
+            <MapPin className="w-3.5 h-3.5" />
             <span>{profile.distance} miles away</span>
           </div>
 
-          <p className="text-card/90 mb-4 line-clamp-2">{profile.bio}</p>
+          <p className="text-white/75 text-sm mb-3 line-clamp-2 leading-relaxed">{profile.bio}</p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {profile.interests.slice(0, 4).map((interest) => (
               <Badge
                 key={interest}
                 variant="secondary"
-                className="bg-card/20 backdrop-blur-sm text-card border-card/30"
+                className="bg-white/15 backdrop-blur-sm text-white/90 border-white/10 text-[11px] font-medium px-2.5 py-0.5"
               >
                 {interest}
               </Badge>

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Heart, Star, RotateCcw } from "lucide-react";
+import { X, Heart, Star, RotateCcw, Zap } from "lucide-react";
 
 interface SwipeButtonsProps {
   onSwipe: (direction: "left" | "right") => void;
@@ -10,52 +10,55 @@ interface SwipeButtonsProps {
 
 const SwipeButtons = ({ onSwipe, onSuperLike, onUndo, canUndo }: SwipeButtonsProps) => {
   return (
-    <div className="flex items-center justify-center gap-3 py-4">
+    <div className="flex items-center justify-center gap-4 py-4 px-6">
+      {/* Undo */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.88 }}
         onClick={onUndo}
         disabled={!canUndo}
-        className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="w-11 h-11 rounded-2xl bg-card shadow-card flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       >
-        <RotateCcw className="w-4 h-4" />
+        <RotateCcw className="w-[18px] h-[18px]" />
       </motion.button>
 
+      {/* Nope */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.88 }}
         onClick={() => onSwipe("left")}
-        className="w-14 h-14 rounded-full bg-card shadow-elevated flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+        className="w-[60px] h-[60px] rounded-2xl bg-card shadow-elevated flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all duration-200"
       >
-        <X className="w-7 h-7" />
+        <X className="w-7 h-7" strokeWidth={2.5} />
       </motion.button>
 
+      {/* Super Like */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.88 }}
         onClick={onSuperLike}
-        className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+        className="w-11 h-11 rounded-2xl bg-card shadow-card flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all"
       >
-        <Star className="w-4 h-4" />
+        <Star className="w-[18px] h-[18px]" />
       </motion.button>
 
+      {/* Like */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.88 }}
         onClick={() => onSwipe("right")}
-        className="w-14 h-14 rounded-full gradient-primary shadow-glow flex items-center justify-center text-primary-foreground"
+        className="w-[60px] h-[60px] rounded-2xl gradient-primary shadow-glow flex items-center justify-center text-primary-foreground transition-all duration-200"
       >
-        <Heart className="w-7 h-7" />
+        <Heart className="w-7 h-7" fill="currentColor" />
       </motion.button>
 
+      {/* Boost */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.88 }}
+        className="w-11 h-11 rounded-2xl bg-card shadow-card flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
+        <Zap className="w-[18px] h-[18px]" />
       </motion.button>
     </div>
   );

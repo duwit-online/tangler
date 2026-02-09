@@ -107,22 +107,22 @@ const Index = () => {
     switch (activeTab) {
       case "discover":
         return (
-          <div className="flex flex-col h-full pt-16 pb-18">
+          <div className="flex flex-col h-full pt-16 pb-20">
             {/* Search Bar */}
-            <div className="px-3 mb-2">
+            <div className="px-4 mb-3">
               {showDiscoverSearch ? (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-center gap-2"
                 >
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       placeholder="Search by name, interests..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 h-10 rounded-full bg-card border-border text-sm"
+                      className="pl-10 h-11 rounded-xl bg-card border-border/50 text-sm shadow-card"
                       autoFocus
                     />
                   </div>
@@ -131,7 +131,7 @@ const Index = () => {
                       setShowDiscoverSearch(false);
                       setSearchQuery("");
                     }}
-                    className="p-2 hover:bg-secondary rounded-full transition-colors"
+                    className="p-2.5 hover:bg-secondary rounded-xl transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -139,7 +139,7 @@ const Index = () => {
               ) : (
                 <button
                   onClick={() => setShowDiscoverSearch(true)}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border text-muted-foreground text-sm hover:border-primary/50 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-3 rounded-xl bg-card border border-border/50 text-muted-foreground text-sm hover:border-primary/30 transition-all shadow-card"
                 >
                   <Search className="w-4 h-4" />
                   Search profiles...
@@ -147,7 +147,7 @@ const Index = () => {
               )}
             </div>
 
-            <div className="relative flex-1 mx-3">
+            <div className="relative flex-1 mx-4">
               {isLoading ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -178,15 +178,15 @@ const Index = () => {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="absolute inset-0 flex flex-col items-center justify-center text-center p-6"
+                      className="absolute inset-0 flex flex-col items-center justify-center text-center p-8"
                     >
-                      <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center mb-5 animate-pulse-glow">
-                        <Heart className="w-10 h-10 text-primary-foreground" />
+                      <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center mb-6 shadow-glow">
+                        <Heart className="w-10 h-10 text-primary-foreground fill-primary-foreground" />
                       </div>
-                      <h2 className="text-xl font-serif font-semibold text-foreground mb-2">
+                      <h2 className="text-xl font-serif font-bold text-foreground mb-2">
                         {isSearching ? "No results found" : "No more profiles"}
                       </h2>
-                      <p className="text-sm text-muted-foreground max-w-xs">
+                      <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                         {isSearching 
                           ? "Try a different search term" 
                           : "You've seen everyone nearby. Check back later!"}
@@ -225,7 +225,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background gradient-hero">
       <Header onNotificationClick={() => setActiveTab("notifications")} />
       
       <main className="min-h-screen max-w-md mx-auto">
