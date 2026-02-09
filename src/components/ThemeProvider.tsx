@@ -9,14 +9,14 @@ type ColorScheme = {
 };
 
 const defaultColorSchemes: ColorScheme[] = [
-  { name: 'Wine', primary: '345 60% 40%', accent: '340 75% 55%' },
-  { name: 'Coral', primary: '5 85% 65%', accent: '340 75% 55%' },
-  { name: 'Ocean', primary: '210 85% 55%', accent: '195 90% 50%' },
-  { name: 'Forest', primary: '150 60% 40%', accent: '120 50% 45%' },
-  { name: 'Sunset', primary: '25 90% 55%', accent: '15 95% 60%' },
-  { name: 'Purple', primary: '270 70% 55%', accent: '280 75% 60%' },
-  { name: 'Gold', primary: '45 90% 50%', accent: '35 95% 55%' },
-  { name: 'Rose', primary: '350 80% 60%', accent: '340 85% 65%' },
+  { name: 'Coral Rose', primary: '5 75% 65%', accent: '270 40% 72%' },
+  { name: 'Blush', primary: '340 65% 62%', accent: '270 45% 75%' },
+  { name: 'Sunset', primary: '25 85% 58%', accent: '340 70% 60%' },
+  { name: 'Lavender', primary: '270 45% 62%', accent: '340 60% 65%' },
+  { name: 'Ocean', primary: '195 75% 50%', accent: '210 70% 60%' },
+  { name: 'Forest', primary: '160 55% 45%', accent: '140 45% 50%' },
+  { name: 'Berry', primary: '320 65% 52%', accent: '280 55% 58%' },
+  { name: 'Gold', primary: '40 85% 55%', accent: '25 80% 60%' },
 ];
 
 interface ThemeProviderProps {
@@ -50,10 +50,10 @@ export function ThemeProvider({
       try {
         return JSON.parse(saved);
       } catch {
-        return defaultColorSchemes[0]; // Wine is default
+        return defaultColorSchemes[0];
       }
     }
-    return defaultColorSchemes[0]; // Wine is default
+    return defaultColorSchemes[0];
   });
 
   useEffect(() => {
