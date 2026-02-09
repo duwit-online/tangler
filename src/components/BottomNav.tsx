@@ -17,36 +17,48 @@ const tabs = [
 
 const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border safe-area-bottom z-40">
-      <div className="flex items-center justify-around h-14 max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 glass-strong border-t border-border/50 safe-area-bottom z-40">
+      <div className="flex items-center justify-around h-16 max-w-md mx-auto px-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className="relative flex flex-col items-center justify-center flex-1 h-full active:opacity-70 transition-opacity"
+              className="relative flex flex-col items-center justify-center flex-1 h-full group"
             >
               {isActive && (
                 <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-x-3 top-0 h-0.5 gradient-primary rounded-full"
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  layoutId="navIndicator"
+                  className="absolute -top-[1px] left-3 right-3 h-[2px] rounded-full gradient-primary"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               <motion.div
-                whileTap={{ scale: 0.9 }}
-                className={`transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground"
-                }`}
+                whileTap={{ scale: 0.85 }}
+                className="relative"
               >
+                {isActive && (
+                  <motion.div
+                    layoutId="navGlow"
+                    className="absolute inset-0 -m-2 rounded-xl bg-primary/8"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
                 <tab.icon
-                  className={`w-5 h-5 ${isActive ? "fill-primary/20" : ""}`}
+                  className={`w-5 h-5 relative z-10 transition-colors duration-200 ${
+                    isActive 
+                      ? "text-primary" 
+                      : "text-muted-foreground group-hover:text-foreground"
+                  }`}
+                  strokeWidth={isActive ? 2.5 : 1.8}
                 />
               </motion.div>
               <span
-                className={`text-[10px] mt-0.5 transition-colors ${
-                  isActive ? "text-primary font-medium" : "text-muted-foreground"
+                className={`text-[10px] mt-1 transition-all duration-200 ${
+                  isActive 
+                    ? "text-primary font-semibold" 
+                    : "text-muted-foreground font-medium"
                 }`}
               >
                 {tab.label}
