@@ -59,7 +59,7 @@ export const usePushNotifications = () => {
           setRegistration(reg);
           
           // Check if already subscribed
-          const subscription = await reg.pushManager.getSubscription();
+          const subscription = await (reg as any).pushManager?.getSubscription();
           setState(prev => ({
             ...prev,
             isSubscribed: !!subscription,
@@ -133,7 +133,7 @@ export const usePushNotifications = () => {
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      const subscription = await registration.pushManager.getSubscription();
+      const subscription = await (registration as any).pushManager?.getSubscription();
       if (subscription) {
         await subscription.unsubscribe();
       }

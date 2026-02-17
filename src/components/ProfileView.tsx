@@ -48,7 +48,7 @@ const ProfileView = () => {
 
   if (isLoading) {
     return (
-      <div className="pt-16 pb-20 px-3 flex justify-center">
+      <div className="pt-16 pb-20 px-4 flex justify-center items-center min-h-[50vh]">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
@@ -57,14 +57,15 @@ const ProfileView = () => {
   const primaryPhoto = photos.find(p => p.is_primary) || photos[0];
 
   return (
-    <div className="pt-16 pb-20 px-3">
+    <div className="pt-16 pb-20 px-4">
+      {/* Profile Hero */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative mb-6"
       >
         <div className="relative w-24 h-24 mx-auto mb-3">
-          <div className="w-full h-full rounded-full overflow-hidden bg-secondary border-4 border-card shadow-elevated">
+          <div className="w-full h-full rounded-full overflow-hidden bg-secondary border-[3px] border-card shadow-elevated">
             {primaryPhoto ? (
               <img
                 src={getPhotoUrl(primaryPhoto.storage_path)}
@@ -79,7 +80,7 @@ const ProfileView = () => {
           </div>
           <button 
             onClick={() => setShowEditProfile(true)}
-            className="absolute bottom-0 right-0 w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-primary-foreground shadow-card"
+            className="absolute bottom-0 right-0 w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-primary-foreground shadow-glow"
           >
             <Camera className="w-4 h-4" />
           </button>
@@ -100,7 +101,7 @@ const ProfileView = () => {
         <Button
           variant="outline"
           size="sm"
-          className="mx-auto mt-3 flex items-center gap-1.5 h-9 text-sm"
+          className="mx-auto mt-3 flex items-center gap-1.5 h-9 text-sm rounded-xl"
           onClick={() => setShowEditProfile(true)}
         >
           <Edit3 className="w-3.5 h-3.5" />
@@ -108,19 +109,20 @@ const ProfileView = () => {
         </Button>
       </motion.div>
 
+      {/* Profile Completion */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-card rounded-xl p-3.5 shadow-card mb-4"
+        className="bg-card rounded-2xl p-4 shadow-card mb-4"
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2.5">
           <h2 className="text-sm font-semibold text-foreground">Profile Completion</h2>
-          <span className="text-sm text-primary font-semibold">
+          <span className="text-sm text-primary font-bold">
             {profile?.onboarding_completed ? "100%" : "50%"}
           </span>
         </div>
-        <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: profile?.onboarding_completed ? "100%" : "50%" }}
@@ -130,30 +132,31 @@ const ProfileView = () => {
         </div>
       </motion.div>
 
+      {/* Photos Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         className="mb-4"
       >
-        <h2 className="text-sm font-semibold text-foreground mb-2">Your Photos</h2>
-        <div className="grid grid-cols-3 gap-1.5">
+        <h2 className="text-sm font-semibold text-foreground mb-2.5">Your Photos</h2>
+        <div className="grid grid-cols-3 gap-2">
           {photos.map((photo, index) => (
             <div
               key={photo.id}
-              className="aspect-square rounded-lg overflow-hidden relative group"
+              className="aspect-square rounded-xl overflow-hidden relative group shadow-card"
             >
               <img
                 src={getPhotoUrl(photo.storage_path)}
                 alt={`Photo ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           ))}
           {photos.length < 6 && (
             <button 
               onClick={() => setShowEditProfile(true)}
-              className="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+              className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
               <Camera className="w-6 h-6" />
             </button>
@@ -161,18 +164,20 @@ const ProfileView = () => {
         </div>
       </motion.div>
 
+      {/* Bio */}
       {profile?.bio && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-card rounded-xl p-3.5 shadow-card mb-4"
+          className="bg-card rounded-2xl p-4 shadow-card mb-4"
         >
           <h2 className="text-sm font-semibold text-foreground mb-1.5">About Me</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">{profile.bio}</p>
         </motion.div>
       )}
 
+      {/* Interests */}
       {profile?.interests && profile.interests.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -180,13 +185,13 @@ const ProfileView = () => {
           transition={{ delay: 0.4 }}
           className="mb-4"
         >
-          <h2 className="text-sm font-semibold text-foreground mb-2">Interests</h2>
-          <div className="flex flex-wrap gap-1.5">
+          <h2 className="text-sm font-semibold text-foreground mb-2.5">Interests</h2>
+          <div className="flex flex-wrap gap-2">
             {profile.interests.map((interest) => (
               <Badge
                 key={interest}
                 variant="secondary"
-                className="px-2.5 py-1 text-xs bg-primary/10 text-primary border-0"
+                className="px-3 py-1.5 text-xs bg-primary/10 text-primary border-0 rounded-xl"
               >
                 {interest}
               </Badge>
@@ -195,23 +200,26 @@ const ProfileView = () => {
         </motion.div>
       )}
 
+      {/* Menu */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="bg-card rounded-xl overflow-hidden shadow-card"
+        className="bg-card rounded-2xl overflow-hidden shadow-card"
       >
         {menuItems.map((item, index) => (
           <button
             key={item.label}
             onClick={item.action}
-            className={`w-full flex items-center justify-between p-3.5 hover:bg-secondary/50 transition-colors active:opacity-70 ${
-              index !== menuItems.length - 1 ? "border-b border-border" : ""
+            className={`w-full flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors active:opacity-70 ${
+              index !== menuItems.length - 1 ? "border-b border-border/50" : ""
             }`}
           >
-            <div className="flex items-center gap-2.5">
-              <item.icon className={`w-4 h-4 ${item.color}`} />
-              <span className={`text-sm ${item.color}`}>{item.label}</span>
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl ${item.color === 'text-destructive' ? 'bg-destructive/10' : 'bg-secondary'} flex items-center justify-center`}>
+                <item.icon className={`w-[18px] h-[18px] ${item.color}`} />
+              </div>
+              <span className={`text-sm font-medium ${item.color}`}>{item.label}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>

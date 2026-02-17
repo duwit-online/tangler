@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import CategoryPills from "./explore/CategoryPills";
@@ -98,29 +98,40 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
 
   return (
     <div className="min-h-screen pt-16 pb-20">
-      {/* Header */}
-      <div className="px-3 mb-3">
-        <div className="flex items-center gap-2">
+      {/* Search Header */}
+      <div className="px-4 mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2.5"
+        >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search..."
+              placeholder="Search people..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-10 rounded-full bg-card border-border text-sm"
+              className="pl-10 h-11 rounded-2xl bg-card border-border/50 text-sm shadow-card"
             />
           </div>
-          <ExploreFiltersSheet
-            filters={filters}
-            onFiltersChange={setFilters}
-            open={filtersOpen}
-            onOpenChange={setFiltersOpen}
-          />
-        </div>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setFiltersOpen(true)}
+            className="w-11 h-11 rounded-2xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground shadow-card transition-colors"
+          >
+            <SlidersHorizontal className="w-[18px] h-[18px]" />
+          </motion.button>
+        </motion.div>
+        <ExploreFiltersSheet
+          filters={filters}
+          onFiltersChange={setFilters}
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+        />
       </div>
 
       {/* Categories */}
-      <div className="mb-4">
+      <div className="mb-5">
         <CategoryPills
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
@@ -128,7 +139,7 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
       </div>
 
       {/* Content */}
-      <div className="space-y-6">
+      <div className="space-y-7">
         {!selectedCategory && (
           <NewMatchesSection onProfileClick={setSelectedProfile} />
         )}
@@ -198,31 +209,31 @@ const ExploreView = ({ onViewLikes }: ExploreViewProps) => {
         )}
 
         {!selectedCategory && (
-          <div className="px-3">
-            <h3 className="font-serif text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+          <div className="px-4">
+            <h3 className="font-serif text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <span>🔥</span> Explore All
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {allExploreProfiles.map((profile, index) => (
                 <motion.div
                   key={profile.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group shadow-card active:scale-[0.98] transition-transform"
+                  className="relative rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer group shadow-card active:scale-[0.98] transition-transform"
                   onClick={() => setSelectedProfile(profile)}
                 >
                   <img
                     src={profile.photos[0]}
                     alt={profile.display_name || "Profile"}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-2.5 text-card">
-                    <p className="font-medium text-sm truncate">
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 text-card">
+                    <p className="font-serif font-semibold text-sm truncate">
                       {profile.display_name}, {profile.age}
                     </p>
-                    <p className="text-xs text-card/80">{profile.distance} mi</p>
+                    <p className="text-xs text-card/70 mt-0.5">{profile.distance} mi</p>
                   </div>
                 </motion.div>
               ))}
