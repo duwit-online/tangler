@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Star, Crown, Loader2, Sparkles, Check, X, User } from "lucide-react";
+import { Heart, Star, Loader2, Sparkles, X, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useWhoLikedMe, useWhoILiked, useLikeBack, LikeProfile } from "@/hooks/useLikes";
 import { useSwipe } from "@/hooks/useSwipes";
@@ -69,46 +69,46 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       onClick={() => handleProfileClick(profile)}
-      className="relative rounded-xl overflow-hidden bg-card shadow-card cursor-pointer active:scale-[0.98] transition-transform"
+      className="relative rounded-2xl overflow-hidden bg-card shadow-card cursor-pointer active:scale-[0.98] transition-transform group"
     >
       <div className="relative aspect-[3/4]">
         {profile.photos[0] ? (
           <img
             src={profile.photos[0]}
             alt={profile.display_name || "Profile"}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full bg-secondary flex items-center justify-center">
             <User className="w-12 h-12 text-muted-foreground" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
         
         {profile.direction === 'superlike' && (
-          <div className="absolute top-2 right-2">
-            <Badge className="bg-accent/90 text-accent-foreground border-0 text-[10px] px-2 py-0.5">
-              <Star className="w-2.5 h-2.5 mr-0.5 fill-current" />
-              Super
+          <div className="absolute top-2.5 right-2.5">
+            <Badge className="gradient-lavender text-accent-foreground border-0 text-[10px] px-2.5 py-1 shadow-card">
+              <Star className="w-3 h-3 mr-1 fill-current" />
+              Super Like
             </Badge>
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-2.5 text-card">
-          <h3 className="font-semibold text-sm truncate">
+        <div className="absolute bottom-0 left-0 right-0 p-3 text-card">
+          <h3 className="font-serif font-semibold text-base truncate">
             {profile.display_name}, {profile.age}
           </h3>
-          <p className="text-card/80 text-xs">
+          <p className="text-card/80 text-xs mt-0.5">
             {profile.distance} mi away
           </p>
-          <p className="text-card/60 text-[10px] mt-0.5">
+          <p className="text-card/50 text-[10px] mt-0.5">
             {formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true })}
           </p>
         </div>
       </div>
 
       {showActions && (
-        <div className="flex gap-1.5 p-2 bg-card">
+        <div className="flex gap-2 p-2.5 bg-card border-t border-border/50">
           <Button
             variant="outline"
             size="sm"
@@ -116,9 +116,9 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
               e.stopPropagation();
               handlePass(profile);
             }}
-            className="flex-1 h-8 text-xs"
+            className="flex-1 h-9 text-xs rounded-xl"
           >
-            <X className="w-3.5 h-3.5 mr-1" />
+            <X className="w-3.5 h-3.5 mr-1.5" />
             Pass
           </Button>
           <Button
@@ -127,11 +127,11 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
               e.stopPropagation();
               handleLikeBack(profile);
             }}
-            className="flex-1 h-8 text-xs gradient-primary text-primary-foreground"
+            className="flex-1 h-9 text-xs gradient-primary text-primary-foreground rounded-xl shadow-glow"
             disabled={likeBack.isPending}
           >
-            <Heart className="w-3.5 h-3.5 mr-1 fill-current" />
-            Like
+            <Heart className="w-3.5 h-3.5 mr-1.5 fill-current" />
+            Like Back
           </Button>
         </div>
       )}
@@ -139,46 +139,44 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
   );
 
   return (
-    <div className="pt-16 pb-20 px-3">
+    <div className="pt-16 pb-20 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-4"
+        className="mb-5"
       >
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl font-serif font-bold text-foreground">
-            Likes
-          </h1>
-          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
-            <Crown className="w-2.5 h-2.5 mr-0.5" />
-            Premium
-          </Badge>
-        </div>
+        <h1 className="text-2xl font-serif font-bold text-foreground mb-1">
+          Likes
+        </h1>
         <p className="text-sm text-muted-foreground">
           See who's interested in you
         </p>
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-1.5 mb-4">
-        <Button
-          variant={activeTab === 'received' ? 'default' : 'outline'}
-          size="sm"
+      <div className="flex gap-2 mb-5 p-1 bg-secondary/60 rounded-2xl">
+        <button
           onClick={() => setActiveTab('received')}
-          className={`flex-1 h-9 text-xs ${activeTab === 'received' ? 'gradient-primary text-primary-foreground' : ''}`}
+          className={`flex-1 flex items-center justify-center gap-1.5 h-10 text-xs font-semibold rounded-xl transition-all ${
+            activeTab === 'received' 
+              ? 'gradient-primary text-primary-foreground shadow-card' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
-          <Heart className="w-3.5 h-3.5 mr-1.5" />
+          <Heart className="w-3.5 h-3.5" />
           Liked You ({whoLikedMe.length})
-        </Button>
-        <Button
-          variant={activeTab === 'sent' ? 'default' : 'outline'}
-          size="sm"
+        </button>
+        <button
           onClick={() => setActiveTab('sent')}
-          className={`flex-1 h-9 text-xs ${activeTab === 'sent' ? 'gradient-primary text-primary-foreground' : ''}`}
+          className={`flex-1 flex items-center justify-center gap-1.5 h-10 text-xs font-semibold rounded-xl transition-all ${
+            activeTab === 'sent' 
+              ? 'gradient-primary text-primary-foreground shadow-card' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
-          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+          <Sparkles className="w-3.5 h-3.5" />
           You Liked ({whoILiked.length})
-        </Button>
+        </button>
       </div>
 
       {/* Content */}
@@ -193,10 +191,11 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
             initial={{ opacity: 0, x: activeTab === 'received' ? -20 : 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: activeTab === 'received' ? 20 : -20 }}
+            transition={{ duration: 0.25 }}
           >
             {activeTab === 'received' ? (
               whoLikedMe.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {whoLikedMe.map((profile) => renderProfileCard(profile, true))}
                 </div>
               ) : (
@@ -208,7 +207,7 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
               )
             ) : (
               whoILiked.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {whoILiked.map((profile) => renderProfileCard(profile, false))}
                 </div>
               ) : (
@@ -223,7 +222,6 @@ const LikesView = ({ onOpenChat }: LikesViewProps) => {
         </AnimatePresence>
       )}
 
-      {/* Profile Modal */}
       <LikeProfileModal
         profile={selectedProfile}
         isOpen={!!selectedProfile}
@@ -248,13 +246,13 @@ const EmptyState = ({
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="text-center py-14"
+    className="text-center py-16"
   >
-    <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
-      <Icon className="w-8 h-8 text-muted-foreground" />
+    <div className="w-18 h-18 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 w-[72px] h-[72px]">
+      <Icon className="w-8 h-8 text-primary" />
     </div>
-    <h2 className="text-lg font-semibold text-foreground mb-1">{title}</h2>
-    <p className="text-sm text-muted-foreground max-w-xs mx-auto">{description}</p>
+    <h2 className="text-lg font-serif font-semibold text-foreground mb-1.5">{title}</h2>
+    <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">{description}</p>
   </motion.div>
 );
 

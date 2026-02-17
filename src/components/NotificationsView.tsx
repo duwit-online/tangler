@@ -51,11 +51,11 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
   };
 
   return (
-    <div className="pt-16 pb-20 px-3">
+    <div className="pt-16 pb-20 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-4"
+        className="mb-5"
       >
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-2xl font-serif font-bold text-foreground">
@@ -67,10 +67,10 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
               size="sm"
               onClick={() => markAllAsRead.mutate()}
               disabled={markAllAsRead.isPending}
-              className="h-8 text-xs"
+              className="h-9 text-xs rounded-xl"
             >
-              <Check className="w-3.5 h-3.5 mr-1" />
-              Mark all
+              <Check className="w-3.5 h-3.5 mr-1.5" />
+              Mark all read
             </Button>
           )}
         </div>
@@ -93,16 +93,16 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
               key={notification.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: index * 0.04 }}
               onClick={() => handleNotificationClick(notification)}
-              className={`relative p-3 rounded-xl cursor-pointer transition-colors active:scale-[0.98] ${
+              className={`relative p-3.5 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${
                 notification.read 
-                  ? 'bg-card' 
-                  : 'bg-primary/5 border border-primary/20'
+                  ? 'bg-card shadow-card hover:shadow-elevated' 
+                  : 'bg-primary/5 border border-primary/15 shadow-card'
               }`}
             >
-              <div className="flex items-start gap-2.5">
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                   notification.read ? 'bg-secondary' : 'bg-primary/10'
                 }`}>
                   {getIcon(notification.type)}
@@ -115,15 +115,15 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
                       {notification.title}
                     </h3>
                     {!notification.read && (
-                      <span className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
+                      <span className="w-2 h-2 gradient-primary rounded-full flex-shrink-0" />
                     )}
                   </div>
                   {notification.body && (
-                    <p className="text-muted-foreground text-xs mt-0.5 line-clamp-2">
+                    <p className="text-muted-foreground text-xs mt-0.5 line-clamp-2 leading-relaxed">
                       {notification.body}
                     </p>
                   )}
-                  <p className="text-muted-foreground/60 text-[10px] mt-1">
+                  <p className="text-muted-foreground/50 text-[10px] mt-1.5">
                     {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                   </p>
                 </div>
@@ -132,7 +132,7 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
                     e.stopPropagation();
                     deleteNotification.mutate(notification.id);
                   }}
-                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
+                  className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-xl hover:bg-destructive/10 flex-shrink-0"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -144,15 +144,15 @@ const NotificationsView = ({ onOpenChat }: NotificationsViewProps) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-14"
+          className="text-center py-16"
         >
-          <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
-            <Bell className="w-8 h-8 text-muted-foreground" />
+          <div className="w-[72px] h-[72px] rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground mb-1">
+          <h2 className="text-lg font-serif font-semibold text-foreground mb-1.5">
             No notifications yet
           </h2>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
             When someone matches with you or sends a message, you'll see it here.
           </p>
         </motion.div>

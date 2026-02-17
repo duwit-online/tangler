@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, CheckCheck } from "lucide-react";
+import { Search, CheckCheck, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMatches } from "@/hooks/useMatches";
 import { useOnlineStatuses } from "@/hooks/useOnlineStatus";
@@ -28,26 +28,26 @@ const MessagesView = ({ onOpenChat }: MessagesViewProps) => {
   }));
 
   return (
-    <div className="pt-16 pb-20 px-3">
+    <div className="pt-16 pb-20 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-4"
+        className="mb-5"
       >
         <h1 className="text-2xl font-serif font-bold text-foreground mb-3">
           Messages
         </h1>
         
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search conversations..."
-            className="pl-9 h-10 bg-secondary/50 border-0 rounded-xl text-sm"
+            className="pl-10 h-11 bg-card border-border/50 rounded-2xl text-sm shadow-card"
           />
         </div>
       </motion.div>
 
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -65,14 +65,14 @@ const MessagesView = ({ onOpenChat }: MessagesViewProps) => {
                 photo: conversation.image,
                 userId: conversation.userId,
               })}
-              className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors active:scale-[0.98] ${
+              className={`flex items-center gap-3 p-3.5 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${
                 conversation.unread 
-                  ? "bg-primary/5 hover:bg-primary/10" 
-                  : "hover:bg-secondary/50"
+                  ? "bg-primary/5 border border-primary/15 shadow-card" 
+                  : "hover:bg-card hover:shadow-card"
               }`}
             >
               <div className="relative flex-shrink-0">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-secondary">
+                <div className="w-13 h-13 rounded-full overflow-hidden bg-secondary w-[52px] h-[52px]">
                   {conversation.image ? (
                     <img
                       src={conversation.image}
@@ -86,10 +86,12 @@ const MessagesView = ({ onOpenChat }: MessagesViewProps) => {
                   )}
                 </div>
                 {conversation.isOnline && (
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-success border-2 border-background" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-background flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 rounded-full bg-success" />
+                  </div>
                 )}
                 {conversation.unread && !conversation.isOnline && (
-                  <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 gradient-primary rounded-full border-2 border-background" />
+                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 gradient-primary rounded-full border-2 border-background" />
                 )}
               </div>
 
@@ -102,21 +104,21 @@ const MessagesView = ({ onOpenChat }: MessagesViewProps) => {
                       {conversation.name}
                     </h3>
                     {conversation.isOnline && (
-                      <span className="text-[10px] text-success font-medium">• Online</span>
+                      <span className="text-[10px] text-success font-medium">Online</span>
                     )}
                   </div>
                   <span className={`text-[10px] flex-shrink-0 ${
-                    conversation.unread ? "text-primary font-medium" : "text-muted-foreground"
+                    conversation.unread ? "text-primary font-semibold" : "text-muted-foreground"
                   }`}>
                     {conversation.time}
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {conversation.isRead && (
                     <CheckCheck className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                   )}
                   <p className={`text-xs truncate ${
-                    conversation.unread ? "text-foreground" : "text-muted-foreground"
+                    conversation.unread ? "text-foreground font-medium" : "text-muted-foreground"
                   }`}>
                     {conversation.lastMessage}
                   </p>
@@ -128,15 +130,15 @@ const MessagesView = ({ onOpenChat }: MessagesViewProps) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-14 text-center"
+            className="flex flex-col items-center justify-center py-16 text-center"
           >
-            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-3">
-              <Search className="w-8 h-8 text-muted-foreground" />
+            <div className="w-[72px] h-[72px] rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+              <MessageCircle className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-lg font-semibold text-foreground mb-1">
+            <h2 className="text-lg font-serif font-semibold text-foreground mb-1.5">
               No messages yet
             </h2>
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               When you match with someone, start a conversation here!
             </p>
           </motion.div>

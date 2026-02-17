@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, User } from "lucide-react";
+import { Heart, User } from "lucide-react";
 import { useMatches, MatchWithProfile } from "@/hooks/useMatches";
 import { useOnlineStatuses } from "@/hooks/useOnlineStatus";
-import { OnlineIndicator } from "@/components/ui/online-indicator";
 import MatchProfileModal from "@/components/matches/MatchProfileModal";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
@@ -38,7 +37,7 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
   };
 
   return (
-    <div className="pt-16 pb-20 px-3">
+    <div className="pt-16 pb-20 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,13 +62,13 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="mb-6"
+              className="mb-7"
             >
               <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Heart className="w-4 h-4 text-primary" />
                 New Matches
               </h2>
-              <div className="flex gap-3 overflow-x-auto pb-3 -mx-3 px-3 scrollbar-hide">
+              <div className="flex gap-3 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
                 {newMatches.map((match, index) => (
                   <motion.div
                     key={match.id}
@@ -80,7 +79,7 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
                     className="flex-shrink-0 cursor-pointer"
                   >
                     <div className="relative">
-                      <div className="w-16 h-16 rounded-full gradient-primary p-0.5">
+                      <div className="w-[68px] h-[68px] rounded-full p-[2px] gradient-primary">
                         <div className="w-full h-full rounded-full overflow-hidden bg-secondary border-2 border-card">
                           {match.photo ? (
                             <img
@@ -101,7 +100,7 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
                         </div>
                       )}
                     </div>
-                    <p className="text-center text-xs font-medium text-foreground mt-1.5 max-w-16 truncate">
+                    <p className="text-center text-[11px] font-medium text-foreground mt-1.5 max-w-[68px] truncate">
                       {match.profile.display_name || "Unknown"}
                     </p>
                   </motion.div>
@@ -119,7 +118,7 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
               All Matches
             </h2>
             {matches.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 {matches.map((match, index) => (
                   <motion.div
                     key={match.id}
@@ -127,14 +126,14 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + index * 0.05 }}
                     onClick={() => handleMatchClick(match)}
-                    className="relative bg-card rounded-xl overflow-hidden shadow-card group cursor-pointer active:scale-[0.98] transition-transform"
+                    className="relative bg-card rounded-2xl overflow-hidden shadow-card group cursor-pointer active:scale-[0.98] transition-transform"
                   >
                     <div className="w-full aspect-[3/4] bg-secondary">
                       {match.photo ? (
                         <img
                           src={match.photo}
                           alt={match.profile.display_name || "Match"}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground text-3xl font-semibold">
@@ -142,28 +141,26 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
                         </div>
                       )}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/15 to-transparent" />
                     
-                    {/* Online indicator */}
                     {onlineStatuses[match.other_user_id] && (
-                      <div className="absolute top-2 left-2 flex items-center gap-1 bg-card/80 backdrop-blur-sm rounded-full px-2 py-0.5">
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 glass rounded-full px-2.5 py-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-success" />
                         <span className="text-[10px] font-medium text-foreground">Online</span>
                       </div>
                     )}
 
-                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                      <h3 className="text-sm font-semibold text-card truncate">
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <h3 className="text-sm font-serif font-semibold text-card truncate">
                         {match.profile.display_name || "Unknown"}
                       </h3>
-                      <p className="text-card/70 text-xs">
+                      <p className="text-card/60 text-xs mt-0.5">
                         {formatDistanceToNow(new Date(match.matched_at), { addSuffix: true })}
                       </p>
                     </div>
 
-                    {/* Unread indicator */}
                     {match.unread_count > 0 && (
-                      <div className="absolute top-2 right-2 min-w-5 h-5 px-1.5 bg-primary rounded-full flex items-center justify-center">
+                      <div className="absolute top-2.5 right-2.5 min-w-5 h-5 px-1.5 gradient-primary rounded-full flex items-center justify-center shadow-glow">
                         <span className="text-[10px] font-bold text-primary-foreground">
                           {match.unread_count}
                         </span>
@@ -173,11 +170,12 @@ const MatchesView = ({ onOpenChat }: MatchesViewProps) => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-10">
-                <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
-                  <Heart className="w-7 h-7 text-muted-foreground" />
+              <div className="text-center py-16">
+                <div className="w-[72px] h-[72px] rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-8 h-8 text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground">No matches yet. Keep swiping!</p>
+                <h3 className="font-serif text-lg font-semibold text-foreground mb-1.5">No matches yet</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Keep swiping to find your match!</p>
               </div>
             )}
           </motion.div>

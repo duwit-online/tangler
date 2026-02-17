@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Flame, MessageCircle, Heart, User, Compass, Crown } from "lucide-react";
+import { Flame, MessageCircle, Heart, User, Compass } from "lucide-react";
 
 interface BottomNavProps {
   activeTab: string;
@@ -9,7 +9,7 @@ interface BottomNavProps {
 const tabs = [
   { id: "discover", icon: Flame, label: "Discover" },
   { id: "explore", icon: Compass, label: "Explore" },
-  { id: "likes", icon: Crown, label: "Likes" },
+  { id: "likes", icon: Heart, label: "Likes" },
   { id: "matches", icon: Heart, label: "Matches" },
   { id: "messages", icon: MessageCircle, label: "Chat" },
   { id: "profile", icon: User, label: "Profile" },

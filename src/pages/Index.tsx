@@ -21,8 +21,31 @@ import { Loader2, Heart, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const pageVariants = {
+  initial: (direction: number) => ({
+    opacity: 0,
+    x: direction > 0 ? 60 : -60,
+    scale: 0.97,
+  }),
+  animate: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    x: direction > 0 ? -60 : 60,
+    scale: 0.97,
+    transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  }),
+};
+
+const tabOrder = ["discover", "explore", "likes", "matches", "messages", "notifications", "profile"];
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("discover");
+  const [prevTab, setPrevTab] = useState("discover");
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [showDiscoverSearch, setShowDiscoverSearch] = useState(false);
@@ -33,16 +56,21 @@ const Index = () => {
     userId?: string;
   } | null>(null);
 
-  // Update last seen for online status
   useUpdateLastSeen();
 
-  // Use smart matching for discover - filters by gender preferences
   const { data: profiles = [], isLoading } = useSmartDiscoverProfiles();
   const { swipe: swipeMutation, undo: undoMutation, canUndo } = useSwipeWithUndo();
   const { searchQuery, setSearchQuery, filteredProfiles, isSearching } = useDiscoverSearch(profiles);
   const { triggerSuperLikeEffect } = useSuperLikeAnimation();
 
   const displayProfiles = isSearching ? filteredProfiles : profiles;
+
+  const direction = tabOrder.indexOf(activeTab) >= tabOrder.indexOf(prevTab) ? 1 : -1;
+
+  const handleTabChange = (tab: string) => {
+    setPrevTab(activeTab);
+    setActiveTab(tab);
+  };
 
   const handleSwipe = async (direction: "left" | "right") => {
     const currentProfile = displayProfiles[0];
@@ -71,7 +99,6 @@ const Index = () => {
     const currentProfile = displayProfiles[0];
     if (!currentProfile) return;
 
-    // Trigger confetti animation
     triggerSuperLikeEffect();
 
     try {
@@ -108,7 +135,6 @@ const Index = () => {
       case "discover":
         return (
           <div className="flex flex-col h-full pt-16 pb-20">
-            {/* Search Bar */}
             <div className="px-4 mb-3">
               {showDiscoverSearch ? (
                 <motion.div
@@ -122,7 +148,7 @@ const Index = () => {
                       placeholder="Search by name, interests..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-11 rounded-xl bg-card border-border/50 text-sm shadow-card"
+                      className="pl-10 h-11 rounded-2xl bg-card border-border/50 text-sm shadow-card"
                       autoFocus
                     />
                   </div>
@@ -139,7 +165,7 @@ const Index = () => {
               ) : (
                 <button
                   onClick={() => setShowDiscoverSearch(true)}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 rounded-xl bg-card border border-border/50 text-muted-foreground text-sm hover:border-primary/30 transition-all shadow-card"
+                  className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-card border border-border/50 text-muted-foreground text-sm hover:border-primary/30 transition-all shadow-card"
                 >
                   <Search className="w-4 h-4" />
                   Search profiles...
@@ -208,7 +234,7 @@ const Index = () => {
           </div>
         );
       case "explore":
-        return <ExploreView onViewLikes={() => setActiveTab("likes")} />;
+        return <ExploreView onViewLikes={() => handleTabChange("likes")} />;
       case "likes":
         return <LikesView onOpenChat={setActiveChat} />;
       case "matches":
@@ -226,16 +252,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background gradient-hero">
-      <Header onNotificationClick={() => setActiveTab("notifications")} />
+      <Header onNotificationClick={() => handleTabChange("notifications")} />
       
       <main className="min-h-screen max-w-md mx-auto">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
+            custom={direction}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="h-screen"
           >
             {renderContent()}
@@ -243,7 +270,7 @@ const Index = () => {
         </AnimatePresence>
       </main>
 
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
 
       <MatchModal
         isOpen={isMatchModalOpen}
@@ -262,7 +289,7 @@ const Index = () => {
         } : null}
         onMessage={() => {
           setIsMatchModalOpen(false);
-          setActiveTab("messages");
+          handleTabChange("messages");
         }}
       />
 
