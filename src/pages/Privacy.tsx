@@ -63,7 +63,7 @@ const Privacy = () => {
         <h2>6. Contact Us</h2>
         <p>
           If you have questions about this Privacy Policy, please contact us at 
-          privacy@tangle.app
+          privacy@plurr.app
         </p>
       </main>
     </div>

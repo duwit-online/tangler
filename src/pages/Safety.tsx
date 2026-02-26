@@ -91,7 +91,7 @@ const Safety = () => {
         {/* Community Guidelines */}
         <div className="prose prose-sm dark:prose-invert">
           <h3>Community Guidelines</h3>
-          <p>To keep Tangle a positive experience for everyone:</p>
+          <p>To keep Plurr a positive experience for everyone:</p>
           <ul className="text-sm">
             <li><strong>Be respectful</strong> – Treat others as you'd want to be treated</li>
             <li><strong>Be authentic</strong> – Use real photos and accurate information</li>

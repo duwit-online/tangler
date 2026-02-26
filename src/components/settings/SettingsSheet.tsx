@@ -111,7 +111,7 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-3">
               <Eye className="w-5 h-5 text-muted-foreground" />
-              <span className="text-sm">Show me on Tangle</span>
+              <span className="text-sm">Show me on Plurr</span>
             </div>
             <Switch 
               checked={discoveryEnabled} 
@@ -191,7 +191,7 @@ const SettingsSheet = ({ open, onOpenChange }: SettingsSheetProps) => {
 
       {/* About */}
       <div className="text-center pt-4 pb-8">
-        <p className="text-xs text-muted-foreground">Tangle v1.0.0</p>
+        <p className="text-xs text-muted-foreground">Plurr v1.0.0</p>
         <p className="text-xs text-muted-foreground mt-1">Made with ❤️</p>
       </div>
 

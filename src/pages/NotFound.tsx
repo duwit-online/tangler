@@ -28,7 +28,7 @@ const NotFound = () => {
         <Button asChild className="gradient-primary rounded-xl h-12 px-8 font-semibold shadow-glow">
           <Link to="/">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Tangle
+            Back to Plurr
           </Link>
         </Button>
       </motion.div>

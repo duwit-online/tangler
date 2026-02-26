@@ -80,10 +80,10 @@ const Auth = () => {
             <Heart className="w-10 h-10 text-primary-foreground fill-primary-foreground -rotate-6" />
           </div>
           <h1 className="text-4xl font-serif font-bold text-foreground mb-1 tracking-tight">
-            Tangle
+            Plurr
           </h1>
           <p className="text-sm text-muted-foreground font-medium">
-            Where connections begin
+            Connect Now
           </p>
         </motion.div>
 

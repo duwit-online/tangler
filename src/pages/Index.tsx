@@ -12,13 +12,12 @@ import ChatView from "@/components/ChatView";
 import NotificationsView from "@/components/NotificationsView";
 import ExploreView from "@/components/ExploreView";
 import LikesView from "@/components/LikesView";
+import GlobalSearchBar from "@/components/GlobalSearchBar";
 import { useSwipeWithUndo, DiscoverProfile } from "@/hooks/useSwipes";
 import { useSmartDiscoverProfiles } from "@/hooks/useSmartMatching";
 import { useUpdateLastSeen } from "@/hooks/useOnlineStatus";
-import { useDiscoverSearch } from "@/hooks/useDiscoverSearch";
 import { useSuperLikeAnimation } from "@/hooks/useSuperLikeAnimation";
-import { Loader2, Heart, Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Loader2, Heart } from "lucide-react";
 import { toast } from "sonner";
 
 const pageVariants = {
@@ -48,7 +47,6 @@ const Index = () => {
   const [prevTab, setPrevTab] = useState("discover");
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
-  const [showDiscoverSearch, setShowDiscoverSearch] = useState(false);
   const [activeChat, setActiveChat] = useState<{
     matchId: string;
     name: string;
@@ -60,10 +58,7 @@ const Index = () => {
 
   const { data: profiles = [], isLoading } = useSmartDiscoverProfiles();
   const { swipe: swipeMutation, undo: undoMutation, canUndo } = useSwipeWithUndo();
-  const { searchQuery, setSearchQuery, filteredProfiles, isSearching } = useDiscoverSearch(profiles);
   const { triggerSuperLikeEffect } = useSuperLikeAnimation();
-
-  const displayProfiles = isSearching ? filteredProfiles : profiles;
 
   const direction = tabOrder.indexOf(activeTab) >= tabOrder.indexOf(prevTab) ? 1 : -1;
 
@@ -73,7 +68,7 @@ const Index = () => {
   };
 
   const handleSwipe = async (direction: "left" | "right") => {
-    const currentProfile = displayProfiles[0];
+    const currentProfile = profiles[0];
     if (!currentProfile) return;
 
     const swipeDirection = direction === "right" ? "like" : "pass";
@@ -96,7 +91,7 @@ const Index = () => {
   };
 
   const handleSuperLike = async () => {
-    const currentProfile = displayProfiles[0];
+    const currentProfile = profiles[0];
     if (!currentProfile) return;
 
     triggerSuperLikeEffect();
@@ -136,41 +131,7 @@ const Index = () => {
         return (
           <div className="flex flex-col h-full pt-16 pb-20">
             <div className="px-4 mb-3">
-              {showDiscoverSearch ? (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2"
-                >
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by name, interests..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-11 rounded-2xl bg-card border-border/50 text-sm shadow-card"
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowDiscoverSearch(false);
-                      setSearchQuery("");
-                    }}
-                    className="p-2.5 hover:bg-secondary rounded-xl transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </motion.div>
-              ) : (
-                <button
-                  onClick={() => setShowDiscoverSearch(true)}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-card border border-border/50 text-muted-foreground text-sm hover:border-primary/30 transition-all shadow-card"
-                >
-                  <Search className="w-4 h-4" />
-                  Search profiles...
-                </button>
-              )}
+              <GlobalSearchBar />
             </div>
 
             <div className="relative flex-1 mx-4">
@@ -180,8 +141,8 @@ const Index = () => {
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
-                  {displayProfiles.length > 0 ? (
-                    displayProfiles.slice(0, 3).reverse().map((profile, index) => (
+                  {profiles.length > 0 ? (
+                    profiles.slice(0, 3).reverse().map((profile, index) => (
                       <ProfileCard
                         key={profile.id}
                         profile={{
@@ -197,7 +158,7 @@ const Index = () => {
                           verified: true,
                         }}
                         onSwipe={handleSwipe}
-                        isTop={index === Math.min(displayProfiles.length, 3) - 1}
+                        isTop={index === Math.min(profiles.length, 3) - 1}
                       />
                     ))
                   ) : (
@@ -210,12 +171,10 @@ const Index = () => {
                         <Heart className="w-10 h-10 text-primary-foreground fill-primary-foreground" />
                       </div>
                       <h2 className="text-xl font-serif font-bold text-foreground mb-2">
-                        {isSearching ? "No results found" : "No more profiles"}
+                        No more profiles
                       </h2>
                       <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-                        {isSearching 
-                          ? "Try a different search term" 
-                          : "You've seen everyone nearby. Check back later!"}
+                        You've seen everyone nearby. Check back later!
                       </p>
                     </motion.div>
                   )}
@@ -223,7 +182,7 @@ const Index = () => {
               )}
             </div>
 
-            {displayProfiles.length > 0 && (
+            {profiles.length > 0 && (
               <SwipeButtons
                 onSwipe={handleSwipe}
                 onSuperLike={handleSuperLike}

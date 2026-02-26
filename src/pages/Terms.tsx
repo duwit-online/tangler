@@ -21,12 +21,12 @@ const Terms = () => {
 
         <h2>1. Acceptance of Terms</h2>
         <p>
-          By accessing or using Tangle, you agree to be bound by these Terms of Service. 
+          By accessing or using Plurr, you agree to be bound by these Terms of Service. 
           If you do not agree to these terms, please do not use our services.
         </p>
 
         <h2>2. Eligibility</h2>
-        <p>You must be at least 18 years old to use Tangle. By using our services, you represent that:</p>
+        <p>You must be at least 18 years old to use Plurr. By using our services, you represent that:</p>
         <ul>
           <li>You are at least 18 years of age</li>
           <li>You have the legal capacity to enter into this agreement</li>
@@ -78,7 +78,7 @@ const Terms = () => {
 
         <h2>9. Limitation of Liability</h2>
         <p>
-          To the maximum extent permitted by law, Tangle shall not be liable for any 
+          To the maximum extent permitted by law, Plurr shall not be liable for any 
           indirect, incidental, special, or consequential damages arising from your 
           use of the service.
         </p>
@@ -92,7 +92,7 @@ const Terms = () => {
         <h2>11. Contact</h2>
         <p>
           For questions about these Terms of Service, please contact us at 
-          legal@tangle.app
+          legal@plurr.app
         </p>
       </main>
     </div>

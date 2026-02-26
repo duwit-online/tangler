@@ -87,7 +87,7 @@ const Support = () => {
               </div>
               <div>
                 <p className="font-medium text-sm">Email Us</p>
-                <p className="text-xs text-muted-foreground">support@tangle.app</p>
+                <p className="text-xs text-muted-foreground">support@plurr.app</p>
               </div>
             </CardContent>
           </Card>

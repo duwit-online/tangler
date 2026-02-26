@@ -50,7 +50,7 @@ const Header = ({ onNotificationClick }: HeaderProps) => {
             </svg>
           </div>
           <h1 className="text-xl font-serif font-bold text-gradient tracking-tight">
-            tangle
+            plurr
           </h1>
         </motion.div>
 
