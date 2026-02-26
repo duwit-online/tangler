@@ -103,7 +103,7 @@ export const usePushNotifications = () => {
 
       // Trigger a test notification
       if (registration.active) {
-        registration.showNotification('Welcome to Tangle! 🎉', {
+        registration.showNotification('Welcome to Plurr! 🎉', {
           body: 'Push notifications are now enabled. You\'ll be notified about matches, messages, and likes.',
           icon: '/favicon.ico',
           badge: '/favicon.ico',

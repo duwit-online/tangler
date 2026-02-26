@@ -56,7 +56,7 @@ const LocationMap = ({
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`,
           {
             headers: {
-              'User-Agent': 'TangleDatingApp/1.0',
+              'User-Agent': 'PlurrDatingApp/1.0',
             },
           }
         );
@@ -92,7 +92,7 @@ const LocationMap = ({
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
         {
           headers: {
-            'User-Agent': 'TangleDatingApp/1.0',
+            'User-Agent': 'PlurrDatingApp/1.0',
           },
         }
       );

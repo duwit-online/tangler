@@ -51,7 +51,7 @@ export const useReport = () => {
       if (error) throw error;
 
       toast.success('Report submitted', {
-        description: 'Thank you for keeping Tangle safe. We\'ll review this shortly.',
+        description: 'Thank you for keeping Plurr safe. We\'ll review this shortly.',
       });
       return true;
     } catch (error) {
