@@ -61,27 +61,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        wine: {
-          DEFAULT: "hsl(var(--wine))",
-          light: "hsl(var(--wine-light))",
-          dark: "hsl(var(--wine-dark))",
+        teal: {
+          DEFAULT: "hsl(var(--teal))",
+          light: "hsl(var(--teal-light))",
+          dark: "hsl(var(--teal-dark))",
         },
-        coral: {
-          DEFAULT: "hsl(var(--coral))",
-          light: "hsl(var(--coral-light))",
-          dark: "hsl(var(--coral-dark))",
+        cyan: {
+          DEFAULT: "hsl(var(--cyan))",
+          light: "hsl(var(--cyan-light))",
         },
-        rose: {
-          DEFAULT: "hsl(var(--rose))",
-          light: "hsl(var(--rose-light))",
+        pine: "hsl(var(--pine))",
+        steel: {
+          DEFAULT: "hsl(var(--steel))",
+          light: "hsl(var(--steel-light))",
         },
-        lavender: {
-          DEFAULT: "hsl(var(--lavender))",
-          light: "hsl(var(--lavender-light))",
-        },
-        burgundy: "hsl(var(--burgundy))",
-        cream: "hsl(var(--cream))",
-        peach: "hsl(var(--peach))",
+        petrol: "hsl(var(--petrol))",
+        obsidian: "hsl(var(--obsidian))",
         success: "hsl(var(--success))",
         online: "hsl(var(--online))",
         sidebar: {

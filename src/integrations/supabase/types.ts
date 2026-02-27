@@ -148,12 +148,15 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          ai_enabled: boolean
+          ai_personality: string | null
           bio: string | null
           created_at: string
           display_name: string | null
           gender: string | null
           id: string
           interests: string[] | null
+          is_dummy: boolean
           last_seen: string | null
           latitude: number | null
           location: string | null
@@ -165,12 +168,15 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          ai_enabled?: boolean
+          ai_personality?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
           id?: string
           interests?: string[] | null
+          is_dummy?: boolean
           last_seen?: string | null
           latitude?: number | null
           location?: string | null
@@ -182,12 +188,15 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          ai_enabled?: boolean
+          ai_personality?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
           id?: string
           interests?: string[] | null
+          is_dummy?: boolean
           last_seen?: string | null
           latitude?: number | null
           location?: string | null
