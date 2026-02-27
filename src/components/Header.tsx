@@ -14,7 +14,7 @@ const Header = ({ onNotificationClick }: HeaderProps) => {
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 glass-strong border-b border-border/50 safe-area-top">
+    <header className="fixed top-0 left-0 right-0 z-40 glass-strong border-b border-border/40 safe-area-top">
       <div className="flex items-center justify-between h-14 max-w-md mx-auto px-4">
         <Sheet open={showSettings} onOpenChange={setShowSettings}>
           <SheetTrigger asChild>

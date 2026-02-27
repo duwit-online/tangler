@@ -9,14 +9,14 @@ type ColorScheme = {
 };
 
 const defaultColorSchemes: ColorScheme[] = [
-  { name: 'Coral Rose', primary: '5 75% 65%', accent: '270 40% 72%' },
-  { name: 'Blush', primary: '340 65% 62%', accent: '270 45% 75%' },
-  { name: 'Sunset', primary: '25 85% 58%', accent: '340 70% 60%' },
-  { name: 'Lavender', primary: '270 45% 62%', accent: '340 60% 65%' },
-  { name: 'Ocean', primary: '195 75% 50%', accent: '210 70% 60%' },
-  { name: 'Forest', primary: '160 55% 45%', accent: '140 45% 50%' },
-  { name: 'Berry', primary: '320 65% 52%', accent: '280 55% 58%' },
-  { name: 'Gold', primary: '40 85% 55%', accent: '25 80% 60%' },
+  { name: 'Obsidian Teal', primary: '181 82% 24%', accent: '200 40% 56%' },
+  { name: 'Deep Pine', primary: '180 40% 10%', accent: '181 82% 24%' },
+  { name: 'Steel Blue', primary: '200 40% 56%', accent: '200 40% 26%' },
+  { name: 'Cyan', primary: '180 85% 33%', accent: '181 82% 24%' },
+  { name: 'Ocean', primary: '195 75% 40%', accent: '210 70% 50%' },
+  { name: 'Forest', primary: '160 55% 35%', accent: '140 45% 40%' },
+  { name: 'Emerald', primary: '152 60% 38%', accent: '160 50% 30%' },
+  { name: 'Midnight', primary: '200 35% 22%', accent: '180 30% 35%' },
 ];
 
 interface ThemeProviderProps {
@@ -70,7 +70,6 @@ export function ThemeProvider({
     }
   }, [theme]);
 
-  // Apply color scheme
   useEffect(() => {
     const root = window.document.documentElement;
     root.style.setProperty('--primary', colorScheme.primary);

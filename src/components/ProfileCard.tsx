@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, PanInfo, useMotionValue, useTransform } from "framer-motion";
-import { MapPin, Verified, Heart, X, ChevronLeft, ChevronRight, Map } from "lucide-react";
+import { MapPin, Verified, Heart, X, Map } from "lucide-react";
 import { Profile } from "@/data/profiles";
 import { Badge } from "@/components/ui/badge";
 import LocationMap from "@/components/LocationMap";
@@ -14,38 +14,56 @@ interface ProfileCardProps {
 const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showMap, setShowMap] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
+  const constraintsRef = useRef(null);
   
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
-  const likeOpacity = useTransform(x, [0, 120], [0, 1]);
-  const nopeOpacity = useTransform(x, [-120, 0], [1, 0]);
-  const cardScale = useTransform(x, [-300, 0, 300], [0.95, 1, 0.95]);
+  const likeOpacity = useTransform(x, [0, 80], [0, 1]);
+  const nopeOpacity = useTransform(x, [-80, 0], [1, 0]);
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
 
   const handleDragEnd = (_: any, info: PanInfo) => {
-    if (Math.abs(info.offset.x) > 100) {
-      onSwipe(info.offset.x > 0 ? "right" : "left");
+    setIsDragging(false);
+    const threshold = 80;
+    const velocity = Math.abs(info.velocity.x);
+    
+    if (Math.abs(info.offset.x) > threshold || velocity > 500) {
+      const direction = info.offset.x > 0 ? "right" : "left";
+      onSwipe(direction);
     }
   };
 
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => 
-      prev < profile.images.length - 1 ? prev + 1 : prev
-    );
-  };
-
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
+  const handleTap = (e: React.MouseEvent) => {
+    if (isDragging) return;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const tapX = e.clientX - rect.left;
+    const width = rect.width;
+    
+    if (tapX < width * 0.35 && currentImageIndex > 0) {
+      setCurrentImageIndex(prev => prev - 1);
+    } else if (tapX > width * 0.65 && currentImageIndex < profile.images.length - 1) {
+      setCurrentImageIndex(prev => prev + 1);
+    }
   };
 
   return (
     <motion.div
-      className="absolute w-full h-full cursor-grab active:cursor-grabbing"
-      style={{ x, rotate, scale: cardScale, zIndex: isTop ? 10 : 0 }}
+      ref={constraintsRef}
+      className="absolute w-full h-full"
+      style={{ 
+        x, 
+        rotate, 
+        zIndex: isTop ? 10 : 0,
+        touchAction: isTop ? "none" : "auto",
+      }}
       drag={isTop ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={0.7}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       initial={{ scale: isTop ? 1 : 0.92, opacity: isTop ? 1 : 0.4 }}
       animate={{ scale: isTop ? 1 : 0.92, opacity: isTop ? 1 : 0.6 }}
@@ -54,8 +72,12 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
         opacity: 0,
         transition: { duration: 0.35, ease: "easeOut" }
       }}
+      whileDrag={{ cursor: "grabbing" }}
     >
-      <div className="relative w-full h-full rounded-[28px] overflow-hidden shadow-elevated">
+      <div 
+        className="relative w-full h-full rounded-[28px] overflow-hidden shadow-elevated cursor-grab active:cursor-grabbing"
+        onClick={handleTap}
+      >
         {/* Image or Map */}
         <div className="absolute inset-0">
           {showMap && profile.location ? (
@@ -64,12 +86,12 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
             <img
               src={profile.images[currentImageIndex]}
               alt={profile.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover select-none pointer-events-none"
+              draggable={false}
               loading="lazy"
             />
           )}
-          {/* Cinematic gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
         </div>
 
         {/* Map toggle */}
@@ -83,7 +105,7 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
         )}
 
         {/* Image dots */}
-        <div className="absolute top-4 left-4 right-4 flex gap-1.5">
+        <div className="absolute top-4 left-4 right-4 flex gap-1.5 z-10">
           {profile.images.map((_, idx) => (
             <div
               key={idx}
@@ -96,30 +118,22 @@ const ProfileCard = ({ profile, onSwipe, isTop }: ProfileCardProps) => {
           ))}
         </div>
 
-        {/* Nav buttons */}
-        {profile.images.length > 1 && (
-          <>
-            <button onClick={prevImage} className="absolute left-0 top-12 bottom-32 w-1/3" />
-            <button onClick={nextImage} className="absolute right-0 top-12 bottom-32 w-1/3" />
-          </>
-        )}
-
         {/* Like/Nope stamps */}
         <motion.div
-          className="absolute top-24 left-6 border-[3px] border-green-400 text-green-400 font-extrabold text-2xl px-4 py-1.5 rounded-xl rotate-[-15deg] tracking-wider"
-          style={{ opacity: likeOpacity }}
+          className="absolute top-20 left-6 z-20 border-[4px] border-success font-extrabold text-3xl px-5 py-2 rounded-2xl rotate-[-15deg] tracking-wider"
+          style={{ opacity: likeOpacity, color: "hsl(var(--success))", borderColor: "hsl(var(--success))" }}
         >
           LIKE
         </motion.div>
         <motion.div
-          className="absolute top-24 right-6 border-[3px] border-red-400 text-red-400 font-extrabold text-2xl px-4 py-1.5 rounded-xl rotate-[15deg] tracking-wider"
-          style={{ opacity: nopeOpacity }}
+          className="absolute top-20 right-6 z-20 border-[4px] border-destructive font-extrabold text-3xl px-5 py-2 rounded-2xl rotate-[15deg] tracking-wider"
+          style={{ opacity: nopeOpacity, color: "hsl(var(--destructive))", borderColor: "hsl(var(--destructive))" }}
         >
           NOPE
         </motion.div>
 
         {/* Profile info */}
-        <div className="absolute bottom-0 left-0 right-0 p-5">
+        <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
           <div className="flex items-end gap-2 mb-2">
             <h2 className="text-[28px] font-serif font-bold text-white leading-tight">
               {profile.name}
